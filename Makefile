@@ -1,11 +1,11 @@
-DB_URL=postgresql://root:secret@localhost:5432/hl-bank?sslmode=disable
+DB_URL=postgresql://root:secret@localhost:5432/meta-bank?sslmode=disable
 
 postgres:
-	docker run --name postgres16.1 -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:16.1-alpine
+	docker run --name meta-bank -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:16.2-alpine
 create_db:
-	docker exec -it postgres16.1 createdb --username=root --owner=root hl-bank
+	docker exec -it meta-bank createdb --username=root --owner=root meta-bank
 drop_db:
-	docker exec -it postgres16.1 dropdb hl-bank
+	docker exec -it meta-bank dropdb meta-bank
 new_migration:
 	migrate create -ext sql -dir db/migrations -seq $(name)
 migrate_up:
