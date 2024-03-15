@@ -5,23 +5,24 @@
 package db
 
 import (
-	"github.com/jackc/pgx/v5/pgtype"
+	"time"
 )
 
 type Account struct {
-	ID        int64              `json:"id"`
-	Owner     string             `json:"owner"`
-	Currency  string             `json:"currency"`
-	Balance   int64              `json:"balance"`
-	CreatedAt pgtype.Timestamptz `json:"created_at"`
+	ID        int64     `json:"id"`
+	Owner     string    `json:"owner"`
+	Currency  string    `json:"currency"`
+	Balance   int64     `json:"balance"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type User struct {
-	Username          string             `json:"username"`
-	Password          string             `json:"password"`
-	Email             string             `json:"email"`
-	FullName          string             `json:"full_name"`
-	Role              string             `json:"role"`
-	PasswordChangedAt pgtype.Timestamptz `json:"password_changed_at"`
-	CreatedAt         pgtype.Timestamptz `json:"created_at"`
+	Username          string    `json:"username"`
+	Password          string    `json:"password"`
+	Email             string    `json:"email"`
+	FullName          string    `json:"full_name"`
+	IsActive          bool      `json:"is_active"`
+	Role              string    `json:"role"`
+	PasswordChangedAt time.Time `json:"password_changed_at"`
+	CreatedAt         time.Time `json:"created_at"`
 }

@@ -9,12 +9,20 @@ SELECT *
 FROM accounts
 WHERE id = $1;
 
--- name: UpdateAuthor :exec
+-- name: ListAccount :many
+SELECT *
+FROM accounts
+WHERE owner = $1
+ORDER BY id LIMIT $2
+OFFSET $3;
+
+
+-- name: UpdateAccount :exec
 UPDATE accounts
 SET balance = $2
 WHERE id = $1 RETURNING *;
 
--- name: DeleteAuthor :exec
+-- name: DeleteAccount :exec
 DELETE
 FROM accounts
 WHERE id = $1;

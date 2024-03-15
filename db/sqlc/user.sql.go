@@ -15,8 +15,8 @@ const createUser = `-- name: CreateUser :one
 INSERT INTO users(username,
                   password,
                   email,
-                  full_name, role)
-VALUES ($1, $2, $3, $4, $5) RETURNING username, password, email, full_name, role, password_changed_at, created_at
+                  full_name, role, is_active)
+VALUES ($1, $2, $3, $4, $5, $6) RETURNING username, password, email, full_name, is_active, role, password_changed_at, created_at
 `
 
 type CreateUserParams struct {
@@ -25,6 +25,7 @@ type CreateUserParams struct {
 	Email    string `json:"email"`
 	FullName string `json:"full_name"`
 	Role     string `json:"role"`
+	IsActive bool   `json:"is_active"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
@@ -34,6 +35,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		arg.Email,
 		arg.FullName,
 		arg.Role,
+		arg.IsActive,
 	)
 	var i User
 	err := row.Scan(
@@ -41,6 +43,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.Password,
 		&i.Email,
 		&i.FullName,
+		&i.IsActive,
 		&i.Role,
 		&i.PasswordChangedAt,
 		&i.CreatedAt,
@@ -48,12 +51,27 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 	return i, err
 }
 
-const getUser = `-- name: GetUser :one
-SELECT username, password, email, full_name, role, password_changed_at, created_at
+const deleteUser = `-- name: DeleteUser :exec
+DELETE
 FROM users
 WHERE username = $1
 `
 
+func (q *Queries) DeleteUser(ctx context.Context, username string) error {
+	_, err := q.db.Exec(ctx, deleteUser, username)
+	return err
+}
+
+const getUser = `-- name: GetUser :one
+
+SELECT username, password, email, full_name, is_active, role, password_changed_at, created_at
+FROM users
+WHERE username = $1
+`
+
+// AND (is_active = $2 OR $2 IS NULL): This checks if is_active is equal to the second parameter ($2)
+// Get all users (active and inactive)
+// allUsers, err := q.GetUser(ctx, "user3", nil)
 func (q *Queries) GetUser(ctx context.Context, username string) (User, error) {
 	row := q.db.QueryRow(ctx, getUser, username)
 	var i User
@@ -62,6 +80,7 @@ func (q *Queries) GetUser(ctx context.Context, username string) (User, error) {
 		&i.Password,
 		&i.Email,
 		&i.FullName,
+		&i.IsActive,
 		&i.Role,
 		&i.PasswordChangedAt,
 		&i.CreatedAt,
@@ -70,10 +89,11 @@ func (q *Queries) GetUser(ctx context.Context, username string) (User, error) {
 }
 
 const listUsers = `-- name: ListUsers :many
-SELECT username, password, email, full_name, role, password_changed_at, created_at
+SELECT username, password, email, full_name, is_active, role, password_changed_at, created_at
 FROM users
-Where role = 'admin'
-  AND username = $1
+Where role != 'admin'
+  AND (username = $1 OR $1 IS NULL) -- Assuming username is optional
+  AND is_active = $2 -- Filter for active users only
 ORDER BY username LIMIT $2
 OFFSET $3
 `
@@ -98,6 +118,7 @@ func (q *Queries) ListUsers(ctx context.Context, arg ListUsersParams) ([]User, e
 			&i.Password,
 			&i.Email,
 			&i.FullName,
+			&i.IsActive,
 			&i.Role,
 			&i.PasswordChangedAt,
 			&i.CreatedAt,
@@ -112,27 +133,41 @@ func (q *Queries) ListUsers(ctx context.Context, arg ListUsersParams) ([]User, e
 	return items, nil
 }
 
-const updateUser = `-- name: UpdateUser :exec
+const updateUser = `-- name: UpdateUser :one
 Update users
-SET password = coalesce($1, password),
-    email    = coalesce($2, email),
-    full_name=coalesce($3, fullname)
-WHERE username = $4 RETURNING username, password, email, full_name, role, password_changed_at, created_at
+SET password  = coalesce($1, password),
+    email     = coalesce($2, email),
+    is_active = coalesce($3, is_active),
+    full_name=coalesce($4, full_name)
+WHERE username = $5 RETURNING username, password, email, full_name, is_active, role, password_changed_at, created_at
 `
 
 type UpdateUserParams struct {
 	Password pgtype.Text `json:"password"`
 	Email    pgtype.Text `json:"email"`
+	IsActive pgtype.Bool `json:"is_active"`
 	FullName pgtype.Text `json:"full_name"`
 	Username string      `json:"username"`
 }
 
-func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) error {
-	_, err := q.db.Exec(ctx, updateUser,
+func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
+	row := q.db.QueryRow(ctx, updateUser,
 		arg.Password,
 		arg.Email,
+		arg.IsActive,
 		arg.FullName,
 		arg.Username,
 	)
-	return err
+	var i User
+	err := row.Scan(
+		&i.Username,
+		&i.Password,
+		&i.Email,
+		&i.FullName,
+		&i.IsActive,
+		&i.Role,
+		&i.PasswordChangedAt,
+		&i.CreatedAt,
+	)
+	return i, err
 }
