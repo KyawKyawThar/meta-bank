@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func CreateRandomUser(t *testing.T) User {
+func createRandomUser(t *testing.T) User {
 
 	hashPassword, err := util.HashPassword(util.RandomString(7))
 	require.NoError(t, err)
@@ -41,11 +41,11 @@ func CreateRandomUser(t *testing.T) User {
 }
 
 func TestCreateUser(t *testing.T) {
-	CreateRandomUser(t)
+	createRandomUser(t)
 }
 
 func TestGetUser(t *testing.T) {
-	user1 := CreateRandomUser(t)
+	user1 := createRandomUser(t)
 
 	user2, err := store.GetUser(context.Background(), user1.Username)
 
@@ -65,7 +65,7 @@ func TestGetUser(t *testing.T) {
 }
 
 func TestUpdateUserOnlyFullName(t *testing.T) {
-	oldUser := CreateRandomUser(t)
+	oldUser := createRandomUser(t)
 	newFullName := util.RandomOwner()
 	arg := UpdateUserParams{
 		Username: oldUser.Username,
@@ -88,7 +88,7 @@ func TestUpdateUserOnlyFullName(t *testing.T) {
 }
 
 func TestUpdateUserOnlyPassword(t *testing.T) {
-	oldUser := CreateRandomUser(t)
+	oldUser := createRandomUser(t)
 
 	hashPassword, err := util.HashPassword(util.RandomString(7))
 
@@ -114,7 +114,7 @@ func TestUpdateUserOnlyPassword(t *testing.T) {
 }
 
 func TestUpdateUserOnlyEmail(t *testing.T) {
-	oldUser := CreateRandomUser(t)
+	oldUser := createRandomUser(t)
 
 	arg := UpdateUserParams{
 		Username: oldUser.Username,
@@ -149,7 +149,7 @@ func TestListUsers(t *testing.T) {
 }
 
 func TestDeleteUser(t *testing.T) {
-	user := CreateRandomUser(t)
+	user := createRandomUser(t)
 
 	err := store.DeleteUser(context.Background(), user.Username)
 	require.NoError(t, err)
