@@ -92,20 +92,19 @@ const listUsers = `-- name: ListUsers :many
 SELECT username, password, email, full_name, is_active, role, password_changed_at, created_at
 FROM users
 Where role != 'admin'
-  AND (username = $1 OR $1 IS NULL) -- Assuming username is optional
-  AND is_active = $2 -- Filter for active users only
+  AND is_active = $1 -- Filter for active users only
 ORDER BY username LIMIT $2
 OFFSET $3
 `
 
 type ListUsersParams struct {
-	Username string `json:"username"`
-	Limit    int32  `json:"limit"`
-	Offset   int32  `json:"offset"`
+	IsActive bool  `json:"is_active"`
+	Limit    int32 `json:"limit"`
+	Offset   int32 `json:"offset"`
 }
 
 func (q *Queries) ListUsers(ctx context.Context, arg ListUsersParams) ([]User, error) {
-	rows, err := q.db.Query(ctx, listUsers, arg.Username, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listUsers, arg.IsActive, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}

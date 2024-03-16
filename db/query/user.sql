@@ -18,8 +18,7 @@ WHERE username = $1;
 SELECT *
 FROM users
 Where role != 'admin'
-  AND (username = $1 OR $1 IS NULL) -- Assuming username is optional
-  AND is_active = $2 -- Filter for active users only
+  AND is_active = $1 -- Filter for active users only
 ORDER BY username LIMIT $2
 OFFSET $3;
 
@@ -36,3 +35,4 @@ WHERE username = sqlc.arg(username) RETURNING *;
 DELETE
 FROM users
 WHERE username = $1;
+

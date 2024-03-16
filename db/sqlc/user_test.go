@@ -21,7 +21,7 @@ func CreateRandomUser(t *testing.T) User {
 		Email:    util.RandomEmail(),
 		FullName: util.RandomOwner(),
 		Role:     "admin",
-		IsActive: false,
+		IsActive: true,
 	}
 
 	user, err := store.CreateUser(context.Background(), arg)
@@ -85,6 +85,67 @@ func TestUpdateUserOnlyFullName(t *testing.T) {
 	require.Equal(t, oldUser.Password, updateUser.Password)
 	require.Equal(t, oldUser.Email, updateUser.Email)
 
+}
+
+func TestUpdateUserOnlyPassword(t *testing.T) {
+	oldUser := CreateRandomUser(t)
+
+	hashPassword, err := util.HashPassword(util.RandomString(7))
+
+	require.NoError(t, err)
+
+	arg := UpdateUserParams{
+		Username: oldUser.Username,
+		Password: pgtype.Text{
+			String: hashPassword,
+			Valid:  true,
+		},
+	}
+	updateUser, err := store.UpdateUser(context.Background(), arg)
+	require.NoError(t, err)
+	require.NotEmpty(t, updateUser)
+
+	require.NotEqual(t, oldUser.Password, updateUser.Password)
+
+	require.Equal(t, hashPassword, updateUser.Password)
+	require.Equal(t, oldUser.Username, updateUser.Username)
+	require.Equal(t, oldUser.Email, updateUser.Email)
+
+}
+
+func TestUpdateUserOnlyEmail(t *testing.T) {
+	oldUser := CreateRandomUser(t)
+
+	arg := UpdateUserParams{
+		Username: oldUser.Username,
+		Email: pgtype.Text{
+			String: util.RandomEmail(),
+			Valid:  true,
+		},
+	}
+	updateUser, err := store.UpdateUser(context.Background(), arg)
+	require.NoError(t, err)
+	require.NotEmpty(t, updateUser)
+
+	require.NotEqual(t, oldUser.Email, updateUser.Email)
+
+	require.Equal(t, arg.Email.String, updateUser.Email)
+	require.Equal(t, oldUser.Username, updateUser.Username)
+	require.Equal(t, oldUser.Password, updateUser.Password)
+
+}
+
+func TestListUsers(t *testing.T) {
+	arg := ListUsersParams{
+		IsActive: false,
+		Limit:    5,
+		Offset:   0,
+	}
+
+	userLists, err := store.ListUsers(context.Background(), arg)
+
+	require.NoError(t, err)
+	require.NotEmpty(t, userLists)
 }
 
 func TestDeleteUser(t *testing.T) {
