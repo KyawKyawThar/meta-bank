@@ -2,7 +2,6 @@ package db
 
 import (
 	"context"
-	"fmt"
 	"github.com/HL/meta-bank/util"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/stretchr/testify/require"
@@ -48,8 +47,6 @@ func TestGetUser(t *testing.T) {
 	user1 := createRandomUser(t)
 
 	user2, err := store.GetUser(context.Background(), user1.Username)
-
-	fmt.Println("user2 is:", user2)
 
 	require.NoError(t, err)
 	require.NotEmpty(t, user2)

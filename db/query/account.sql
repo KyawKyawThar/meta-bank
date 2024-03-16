@@ -17,7 +17,7 @@ ORDER BY id LIMIT $2
 OFFSET $3;
 
 
--- name: UpdateAccount :exec
+-- name: UpdateAccount :one
 UPDATE accounts
 SET balance = $2
 WHERE id = $1 RETURNING *;
