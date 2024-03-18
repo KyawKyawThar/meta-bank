@@ -133,8 +133,15 @@ func TestUpdateUserOnlyEmail(t *testing.T) {
 }
 
 func TestListUsers(t *testing.T) {
+
+	var lastUsers User
+
+	for i := 0; i < 10; i++ {
+		lastUsers = createRandomUser(t)
+	}
+
 	arg := ListUsersParams{
-		IsActive: false,
+		IsActive: lastUsers.IsActive,
 		Limit:    5,
 		Offset:   0,
 	}
