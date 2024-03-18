@@ -150,8 +150,8 @@ func TestListUsers(t *testing.T) {
 	userLists, err := store.ListUsers(context.Background(), arg)
 
 	require.NoError(t, err)
-	fmt.Println("userLists..", userLists)
-	//require.NotEmpty(t, userLists)
+	fmt.Printf("Active Users %v\n", userLists)
+	require.NotEmpty(t, userLists)
 }
 
 func TestDeleteUser(t *testing.T) {
