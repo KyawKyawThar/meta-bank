@@ -18,7 +18,7 @@ jobs:
       postgres:
         image: postgres:16.2-alpine
         env:
-          POSTGRES_USERNAME: root
+          POSTGRES_USER: root
           POSTGRES_PASSWORD: secret
           POSTGRES_DB: meta-bank
         options: >-
