@@ -6,8 +6,8 @@ import (
 )
 
 type Config struct {
-	DBSource      string `mapstructure:"DB_SOURCE"`
-	ServerAddress string `mapstructure:"SERVER_ADDRESS"`
+	DBSource          string `mapstructure:"DB_SOURCE"`
+	HTTPServerAddress string `mapstructure:"HTTP_SERVER_ADDRESS"`
 }
 
 func LoadConfig(path string) (config Config, err error) {
