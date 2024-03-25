@@ -7,6 +7,7 @@ package db
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/jackc/pgx/v5/pgtype"
 )
@@ -29,6 +30,8 @@ type CreateUserParams struct {
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
+
+	fmt.Println("CreateUser....", arg.Role)
 	row := q.db.QueryRow(ctx, createUser,
 		arg.Username,
 		arg.Password,
