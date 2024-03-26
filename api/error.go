@@ -3,6 +3,7 @@ package api
 import (
 	"errors"
 	"fmt"
+	"github.com/HL/meta-bank/util"
 	"github.com/go-playground/validator/v10"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
@@ -66,7 +67,7 @@ func GetMessageFromDBError(err error) (string, int) {
 func GetMessageFromUserValidationError(err error) string {
 	// Type assertion on errors
 	//if validationError, ok := err.(validator.ValidationErrors); ok {}
-
+	fmt.Println("error is:", err)
 	var validationError validator.ValidationErrors
 	if errors.As(err, &validationError) {
 		var messages []string
@@ -78,6 +79,9 @@ func GetMessageFromUserValidationError(err error) string {
 				messages = append(messages, formatUserValidationError(fieldName, fieldErr))
 				break
 			case "Password":
+				messages = append(messages, formatUserValidationError(fieldName, fieldErr))
+				break
+			case "Role":
 				messages = append(messages, formatUserValidationError(fieldName, fieldErr))
 				break
 			case "Email":
@@ -113,6 +117,9 @@ func formatUserValidationError(field string, err validator.FieldError) string {
 		return fmt.Sprintf("%s must be at least %d characters long.", field, err.Param())
 	case "email":
 		return fmt.Sprintf("%s is not a valid email address.", field)
+	case "role":
+		return fmt.Sprintf("roles must be %s OR %s", util.ADMIN, util.USER)
+
 	default:
 		return fmt.Sprintf("Validation error for %s: %v", field, err.Error()) // Generic message for unknown tags
 
