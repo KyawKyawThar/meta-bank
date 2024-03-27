@@ -67,11 +67,11 @@ func GetMessageFromDBError(err error) (string, int) {
 func GetMessageFromUserValidationError(err error) string {
 	// Type assertion on errors
 	//if validationError, ok := err.(validator.ValidationErrors); ok {}
-	fmt.Println("error is:", err)
 	var validationError validator.ValidationErrors
 	if errors.As(err, &validationError) {
 		var messages []string
 		for _, fieldErr := range validationError {
+
 			fieldName := fieldErr.Field()
 
 			switch fieldName {

@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	db "github.com/HL/meta-bank/db/sqlc"
 	"github.com/HL/meta-bank/util"
 	"github.com/gin-gonic/gin"
@@ -45,15 +44,11 @@ func (s *Server) setUpRouter() {
 // Start return the HTTP api on a specific route
 func (s *Server) Start(address string) error {
 
-	test := s.config.HTTPServerAddress
-	fmt.Println("test is:", test)
-
 	return s.router.Run(address)
 
 }
 
 func handleDBErrResponse(c *gin.Context, err error) {
-
 	message, statusCode := GetMessageFromDBError(err)
 	c.JSON(statusCode, gin.H{"Error": message})
 }

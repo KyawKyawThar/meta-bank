@@ -5,7 +5,5 @@ const (
 	GetAccount    = "/account/:id"
 	ListAccounts  = "/accounts"
 
-	CreateTransfer = "/transfers"
-
 	CreateUser = "/user"
 )
