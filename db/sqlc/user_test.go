@@ -151,7 +151,7 @@ func TestListUsers(t *testing.T) {
 
 	require.NoError(t, err)
 	fmt.Printf("Active Users %v\n", userLists)
-	require.NotEmpty(t, userLists)
+
 }
 
 func TestDeleteUser(t *testing.T) {

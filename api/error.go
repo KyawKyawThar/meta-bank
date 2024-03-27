@@ -54,7 +54,7 @@ func GetMessageFromDBError(err error) (string, int) {
 		case errors.Is(pgErr, ErrorRecordNotFound):
 			return "The requested record was not found.", http.StatusNotFound
 		default:
-			return fmt.Sprintf("pgx error: %v (%w)", pgErr.Message, pgErr), http.StatusInternalServerError // Use Message for error message, include original error
+			return fmt.Sprintf("pgx error: %v (%v)", pgErr.Message, pgErr), http.StatusInternalServerError // Use Message for error message, include original error
 		}
 	} else {
 		// Handle other errors (not pgx-specific)
@@ -114,7 +114,7 @@ func formatUserValidationError(field string, err validator.FieldError) string {
 	case "alphanum":
 		return fmt.Sprintf("%s must contain only letters and numbers.", field)
 	case "min":
-		return fmt.Sprintf("%s must be at least %d characters long.", field, err.Param())
+		return fmt.Sprintf("%s must be at least %s characters long.", field, err.Param())
 	case "email":
 		return fmt.Sprintf("%s is not a valid email address.", field)
 	case "role":
