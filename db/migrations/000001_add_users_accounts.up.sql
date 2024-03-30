@@ -11,13 +11,13 @@ CREATE TABLE accounts
 CREATE TABLE users
 (
     username            varchar PRIMARY KEY,
-    password            varchar                                        NOT NULL,
-    email               varchar                                        NOT NULL UNIQUE,
-    full_name           varchar                                        NOT NULL,
-    is_active           BOOLEAN                                        NOT NULL DEFAULT TRUE,
-    role                VARCHAR(255) CHECK (role IN ('user', 'admin')) NOT NULL DEFAULT 'user',
-    password_changed_at timestamptz                                    NOT NULL DEFAULT '0001-01-01 00:00:00z',
-    created_at          timestamptz                                    NOT NULL DEFAULT (now())
+    password            varchar     NOT NULL,
+    email               varchar     NOT NULL UNIQUE,
+    full_name           varchar     NOT NULL,
+    is_active           boolean     NOT NULL DEFAULT TRUE,
+    role                varchar     NOT NULL,
+    password_changed_at timestamptz NOT NULL DEFAULT '0001-01-01 00:00:00z',
+    created_at          timestamptz NOT NULL DEFAULT (now())
 );
 
 CREATE INDEX ON accounts (owner);

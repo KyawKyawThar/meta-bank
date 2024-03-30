@@ -5,8 +5,8 @@ const (
 	EURO = "EURO"
 	SGD  = "SGD"
 
-	ADMIN = "Admin"
-	USER  = "User"
+	DEPOSITOR = "depositor"
+	BANKER    = "banker"
 )
 
 func IsSupportedCurrency(currency string) bool {
@@ -20,7 +20,7 @@ func IsSupportedCurrency(currency string) bool {
 
 func IsSupportedRoles(role string) bool {
 	switch role {
-	case ADMIN, USER:
+	case DEPOSITOR, BANKER:
 		return true
 
 	}

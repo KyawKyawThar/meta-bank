@@ -118,7 +118,7 @@ func formatUserValidationError(field string, err validator.FieldError) string {
 	case "email":
 		return fmt.Sprintf("%s is not a valid email address.", field)
 	case "role":
-		return fmt.Sprintf("roles must be %s OR %s", util.ADMIN, util.USER)
+		return fmt.Sprintf("roles must be %s OR %s", util.BANKER, util.DEPOSITOR)
 
 	default:
 		return fmt.Sprintf("Validation error for %s: %v", field, err.Error()) // Generic message for unknown tags
