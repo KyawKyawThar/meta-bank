@@ -5,5 +5,6 @@ const (
 	GetAccount    = "/account/:id"
 	ListAccounts  = "/accounts"
 
-	CreateUser = "/user"
+	CreateUser = "/register"
+	LoginUser  = "/login"
 )

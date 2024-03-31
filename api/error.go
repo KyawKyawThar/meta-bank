@@ -37,29 +37,21 @@ func CheckError(err error, matchers ...func(err error) bool) error {
 // GetMessageFromDBError to extract a human-readable message from a database error
 func GetMessageFromDBError(err error) (string, int) {
 
-	fmt.Printf("ERROR %v", err.Error())
-	var pgErr *pgconn.PgError
-
-	if errors.As(err, &pgErr) {
-		fmt.Printf("pgError %v", pgErr)
-		switch {
-		case errors.Is(pgErr, ErrorUniqueViolation): // UniqueViolation in pgconn (check actual code for your driver)
+	if errors.Is(err, ErrorRecordNotFound) {
+		return "The requested record was not found.", http.StatusNotFound
+	} else if pgErr, ok := err.(*pgconn.PgError); ok {
+		switch pgErr.Code {
+		case ErrorUniqueViolation.Code: // duplicate value is being inserted for a column or set of columns that have a unique constraint defined.
 			return "A record with the same unique identifier already exists.", http.StatusForbidden
-		case errors.Is(pgErr, ErrForeignViolation): // ForeignKeyViolation in pgconn (check actual code for your driver)
+		case ErrForeignViolation.Code:
 			return "The operation cannot be completed because it would violate a foreign key constraint.", http.StatusForbidden
-		case errors.Is(pgErr, ErrNotNullViolation): // NotNullViolation in pgconn (check actual code for your driver)
-			return "One or more required fields are missing a value.", http.StatusBadRequest // Customize based on your schema
-		case errors.Is(pgErr, ErrorCheckViolation): // NotNullViolation in pgconn (check actual code for your driver)
+		case ErrNotNullViolation.Code:
+			return "One or more required fields are missing a value.", http.StatusBadRequest
+		case ErrorCheckViolation.Code: // This constraint enforces certain conditions on data values for integrity and consistency.
 			return "The data you provided doesn't meet the required criteria.", http.StatusBadRequest
-		case errors.Is(pgErr, ErrorRecordNotFound):
-			return "The requested record was not found.", http.StatusNotFound
-		default:
-			return fmt.Sprintf("pgx error: %v (%v)", pgErr.Message, pgErr), http.StatusInternalServerError // Use Message for error message, include original error
 		}
-	} else {
-		// Handle other errors (not pgx-specific)
-		return "An unexpected database error occurred.", http.StatusInternalServerError // Adjust message as needed
 	}
+	return "An unexpected database error occurred.", http.StatusInternalServerError
 
 }
 

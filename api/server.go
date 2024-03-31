@@ -1,7 +1,9 @@
 package api
 
 import (
+	"fmt"
 	db "github.com/HL/meta-bank/db/sqlc"
+	"github.com/HL/meta-bank/token"
 	"github.com/HL/meta-bank/util"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -11,17 +13,25 @@ import (
 
 // Server serve HTTP request for our app
 type Server struct {
-	store  db.Store
-	router *gin.Engine
-	config util.Config
+	store      db.Store
+	router     *gin.Engine
+	config     util.Config
+	tokenMaker token.Maker
 }
 
 // NewServer create a new http api and setup routing
 func NewServer(store db.Store, config util.Config) (*Server, error) {
 
+	maker, err := token.NewJWTMaker(config.TokenSymmetricKey)
+
+	if err != nil {
+		return nil, fmt.Errorf("cannot create token maker %w", err)
+	}
+
 	server := &Server{
-		store:  store,
-		config: config,
+		store:      store,
+		config:     config,
+		tokenMaker: maker,
 	}
 
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
@@ -38,6 +48,7 @@ func (s *Server) setUpRouter() {
 	router := gin.Default()
 
 	router.POST(util.CreateUser, s.createUser)
+	router.POST(util.LoginUser, s.loginUser)
 	s.router = router
 }
 
@@ -59,5 +70,5 @@ func handleUserValidationErrResponse(c *gin.Context, err error) {
 }
 
 func handleErrorResponse(err error) gin.H {
-	return gin.H{"error": err}
+	return gin.H{"error": err.Error()}
 }

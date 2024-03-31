@@ -30,8 +30,6 @@ type CreateUserParams struct {
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
-
-	fmt.Println("CreateUser....", arg.Role)
 	row := q.db.QueryRow(ctx, createUser,
 		arg.Username,
 		arg.Password,
@@ -69,7 +67,7 @@ const getUser = `-- name: GetUser :one
 
 SELECT username, password, email, full_name, is_active, role, password_changed_at, created_at
 FROM users
-WHERE username = $1
+WHERE username = $1 LIMIT 1
 `
 
 // AND (is_active = $2 OR $2 IS NULL): This checks if is_active is equal to the second parameter ($2)
@@ -88,6 +86,7 @@ func (q *Queries) GetUser(ctx context.Context, username string) (User, error) {
 		&i.PasswordChangedAt,
 		&i.CreatedAt,
 	)
+	fmt.Println("error is:", err)
 	return i, err
 }
 
