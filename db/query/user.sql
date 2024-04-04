@@ -24,8 +24,8 @@ OFFSET $3;
 
 -- name: UpdateUser :one
 Update users
-SET password  = coalesce(sqlc.narg(password), password),
-    email     = coalesce(sqlc.narg(email), email),
+SET password = coalesce(sqlc.narg(password), password),
+    email    = coalesce(sqlc.narg(email), email),
     is_active = coalesce(sqlc.narg(is_active), is_active),
     full_name=coalesce(sqlc.narg(full_name), full_name)
 WHERE username = sqlc.arg(username) RETURNING *;

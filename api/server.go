@@ -33,7 +33,6 @@ func NewServer(store db.Store, config util.Config) (*Server, error) {
 		config:     config,
 		tokenMaker: maker,
 	}
-
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
 		v.RegisterValidation("role", validateRole)
 		v.RegisterValidation("currency", validateCurrency)
@@ -49,6 +48,11 @@ func (s *Server) setUpRouter() {
 
 	router.POST(util.CreateUser, s.createUser)
 	router.POST(util.LoginUser, s.loginUser)
+
+	authRoutes := router.Group("/").Use(s.authMiddleware(s.tokenMaker))
+
+	authRoutes.POST(util.CreateAccount, s.createAccount)
+	authRoutes.GET(util.GetAccount, s.getAccount)
 	s.router = router
 }
 

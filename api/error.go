@@ -82,8 +82,17 @@ func GetMessageFromUserValidationError(err error) string {
 			case "FullName":
 				messages = append(messages, formatUserValidationError(fieldName, fieldErr))
 				break
-			case "IsActive":
+
+			case "Balance":
 				messages = append(messages, formatUserValidationError(fieldName, fieldErr))
+				break
+			case "Currency":
+				messages = append(messages, formatUserValidationError(fieldName, fieldErr))
+				break
+
+			case "ID":
+				messages = append(messages, formatUserValidationError(fieldName, fieldErr))
+				break
 
 			}
 		}
@@ -107,8 +116,12 @@ func formatUserValidationError(field string, err validator.FieldError) string {
 		return fmt.Sprintf("%s must contain only letters and numbers.", field)
 	case "min":
 		return fmt.Sprintf("%s must be at least %s characters long.", field, err.Param())
+	case "gt":
+		return fmt.Sprintf("%s must not be negative", field)
 	case "email":
 		return fmt.Sprintf("%s is not a valid email address.", field)
+	case "currency":
+		return fmt.Sprintf("currency must be %s, %s OR %s", util.SGD, util.USD, util.EURO)
 	case "role":
 		return fmt.Sprintf("roles must be %s OR %s", util.BANKER, util.DEPOSITOR)
 

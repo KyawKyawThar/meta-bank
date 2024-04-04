@@ -16,7 +16,7 @@ type userRequest struct {
 	Email    string `json:"email" binding:"required,email"`
 	FullName string `json:"fullName" binding:"required"`
 	Role     string `json:"role" binding:"required,role"`
-	IsActive bool   `json:"isActive" binding:"required"`
+	IsActive bool   `json:"isActive"`
 }
 
 type userResponse struct {
@@ -56,6 +56,8 @@ func (s *Server) createUser(ctx *gin.Context) {
 
 	var req userRequest
 
+	req.IsActive = true
+
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		handleUserValidationErrResponse(ctx, err)
 		return
@@ -78,7 +80,6 @@ func (s *Server) createUser(ctx *gin.Context) {
 	}
 
 	user, err := s.store.CreateUser(ctx, arg)
-
 	if err != nil {
 		handleDBErrResponse(ctx, err)
 		return
@@ -97,7 +98,6 @@ func (s *Server) loginUser(ctx *gin.Context) {
 	}
 
 	user, err := s.store.GetUser(ctx, req.Username)
-	fmt.Println("code run in getUsre.", user)
 	if err != nil {
 		handleDBErrResponse(ctx, err)
 		return

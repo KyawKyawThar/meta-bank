@@ -22,7 +22,7 @@ type User struct {
 	Email             string    `json:"email"`
 	FullName          string    `json:"full_name"`
 	IsActive          bool      `json:"is_active"`
-	Role              string    `json:"role"`
 	PasswordChangedAt time.Time `json:"password_changed_at"`
 	CreatedAt         time.Time `json:"created_at"`
+	Role              string    `json:"role"`
 }

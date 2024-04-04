@@ -12,10 +12,14 @@ migrate_up:
 	migrate -path db/migrations -database $(DB_URL) -verbose up
 migrate_down:
 	migrate -path db/migrations -database $(DB_URL) -verbose down
+migrate_up1:
+	migrate -path db/migrations -database $(DB_URL) -verbose up 1
+migrate_down1:
+	migrate -path db/migrations -database $(DB_URL) -verbose down 1
 test:
 	go test -v -cover ./...
 sqlc:
 	sqlc generate
 
 
-.PHONY:postgres create_db drop_db new_migration migrate_up migrate_down sqlc test
+.PHONY:postgres create_db drop_db new_migration migrate_up migrate_down sqlc test migrate_up1 migrate_down1

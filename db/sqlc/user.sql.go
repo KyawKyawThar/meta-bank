@@ -7,7 +7,6 @@ package db
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/jackc/pgx/v5/pgtype"
 )
@@ -17,7 +16,7 @@ INSERT INTO users(username,
                   password,
                   email,
                   full_name, role, is_active)
-VALUES ($1, $2, $3, $4, $5, $6) RETURNING username, password, email, full_name, is_active, role, password_changed_at, created_at
+VALUES ($1, $2, $3, $4, $5, $6) RETURNING username, password, email, full_name, is_active, password_changed_at, created_at, role
 `
 
 type CreateUserParams struct {
@@ -45,9 +44,9 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.Email,
 		&i.FullName,
 		&i.IsActive,
-		&i.Role,
 		&i.PasswordChangedAt,
 		&i.CreatedAt,
+		&i.Role,
 	)
 	return i, err
 }
@@ -65,7 +64,7 @@ func (q *Queries) DeleteUser(ctx context.Context, username string) error {
 
 const getUser = `-- name: GetUser :one
 
-SELECT username, password, email, full_name, is_active, role, password_changed_at, created_at
+SELECT username, password, email, full_name, is_active, password_changed_at, created_at, role
 FROM users
 WHERE username = $1 LIMIT 1
 `
@@ -82,16 +81,15 @@ func (q *Queries) GetUser(ctx context.Context, username string) (User, error) {
 		&i.Email,
 		&i.FullName,
 		&i.IsActive,
-		&i.Role,
 		&i.PasswordChangedAt,
 		&i.CreatedAt,
+		&i.Role,
 	)
-	fmt.Println("error is:", err)
 	return i, err
 }
 
 const listUsers = `-- name: ListUsers :many
-SELECT username, password, email, full_name, is_active, role, password_changed_at, created_at
+SELECT username, password, email, full_name, is_active, password_changed_at, created_at, role
 FROM users
 Where role != 'admin'
   AND is_active = $1 -- Filter for active users only
@@ -120,9 +118,9 @@ func (q *Queries) ListUsers(ctx context.Context, arg ListUsersParams) ([]User, e
 			&i.Email,
 			&i.FullName,
 			&i.IsActive,
-			&i.Role,
 			&i.PasswordChangedAt,
 			&i.CreatedAt,
+			&i.Role,
 		); err != nil {
 			return nil, err
 		}
@@ -136,11 +134,11 @@ func (q *Queries) ListUsers(ctx context.Context, arg ListUsersParams) ([]User, e
 
 const updateUser = `-- name: UpdateUser :one
 Update users
-SET password  = coalesce($1, password),
-    email     = coalesce($2, email),
+SET password = coalesce($1, password),
+    email    = coalesce($2, email),
     is_active = coalesce($3, is_active),
     full_name=coalesce($4, full_name)
-WHERE username = $5 RETURNING username, password, email, full_name, is_active, role, password_changed_at, created_at
+WHERE username = $5 RETURNING username, password, email, full_name, is_active, password_changed_at, created_at, role
 `
 
 type UpdateUserParams struct {
@@ -166,9 +164,9 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		&i.Email,
 		&i.FullName,
 		&i.IsActive,
-		&i.Role,
 		&i.PasswordChangedAt,
 		&i.CreatedAt,
+		&i.Role,
 	)
 	return i, err
 }

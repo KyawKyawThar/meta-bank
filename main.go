@@ -12,7 +12,6 @@ import (
 func main() {
 
 	config, err := util.LoadConfig(".")
-
 	if err != nil {
 		log.Fatal().Err(err).Msg("Load Config Failed")
 	}
@@ -36,7 +35,7 @@ func runGinServer(store db.Store, config util.Config) {
 	if err != nil {
 		log.Fatal().Err(err).Msg("Cannot create server")
 	}
-	
+
 	//start server
 	err = s.Start(config.HTTPServerAddress)
 
