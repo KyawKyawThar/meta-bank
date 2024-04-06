@@ -1,8 +1,10 @@
 package api
 
 import (
+	"errors"
 	"fmt"
 	db "github.com/HL/meta-bank/db/sqlc"
+	"github.com/HL/meta-bank/token"
 	"github.com/HL/meta-bank/util"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
@@ -123,6 +125,39 @@ func (s *Server) loginUser(ctx *gin.Context) {
 		AccessTokenExpiresAt: accessPayload.ExpiresAt,
 		User:                 newUserResponse(user),
 	}
+
+	ctx.JSON(http.StatusOK, res)
+}
+
+type getUserRequest struct {
+	Username string `json:"username" binding:"required,alphanum"`
+}
+
+func (s *Server) getUser(ctx *gin.Context) {
+	var req getUserRequest
+
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+
+		handleUserValidationErrResponse(ctx, err)
+		return
+	}
+
+	user, err := s.store.GetUser(ctx, req.Username)
+
+	if err != nil {
+		handleDBErrResponse(ctx, err)
+		return
+	}
+
+	authPayload := ctx.MustGet(s.config.AuthorizationPayloadKey).(*token.Payload)
+
+	if authPayload.Issuer != user.Username {
+
+		err := errors.New("request user doesn't belong to the authenticated user")
+		ctx.JSON(http.StatusUnauthorized, err)
+	}
+
+	res := newUserResponse(user)
 
 	ctx.JSON(http.StatusOK, res)
 }

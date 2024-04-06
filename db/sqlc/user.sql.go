@@ -88,50 +88,6 @@ func (q *Queries) GetUser(ctx context.Context, username string) (User, error) {
 	return i, err
 }
 
-const listUsers = `-- name: ListUsers :many
-SELECT username, password, email, full_name, is_active, password_changed_at, created_at, role
-FROM users
-Where role != 'admin'
-  AND is_active = $1 -- Filter for active users only
-ORDER BY username LIMIT $2
-OFFSET $3
-`
-
-type ListUsersParams struct {
-	IsActive bool  `json:"is_active"`
-	Limit    int32 `json:"limit"`
-	Offset   int32 `json:"offset"`
-}
-
-func (q *Queries) ListUsers(ctx context.Context, arg ListUsersParams) ([]User, error) {
-	rows, err := q.db.Query(ctx, listUsers, arg.IsActive, arg.Limit, arg.Offset)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []User{}
-	for rows.Next() {
-		var i User
-		if err := rows.Scan(
-			&i.Username,
-			&i.Password,
-			&i.Email,
-			&i.FullName,
-			&i.IsActive,
-			&i.PasswordChangedAt,
-			&i.CreatedAt,
-			&i.Role,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
 const updateUser = `-- name: UpdateUser :one
 Update users
 SET password = coalesce($1, password),

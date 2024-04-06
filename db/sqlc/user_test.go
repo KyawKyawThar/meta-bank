@@ -2,7 +2,6 @@ package db
 
 import (
 	"context"
-	"fmt"
 	"github.com/HL/meta-bank/util"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/stretchr/testify/require"
@@ -130,27 +129,6 @@ func TestUpdateUserOnlyEmail(t *testing.T) {
 	require.Equal(t, arg.Email.String, updateUser.Email)
 	require.Equal(t, oldUser.Username, updateUser.Username)
 	require.Equal(t, oldUser.Password, updateUser.Password)
-
-}
-
-func TestListUsers(t *testing.T) {
-
-	var lastUsers User
-
-	for i := 0; i < 10; i++ {
-		lastUsers = createRandomUser(t)
-	}
-
-	arg := ListUsersParams{
-		IsActive: lastUsers.IsActive,
-		Limit:    5,
-		Offset:   0,
-	}
-
-	userLists, err := store.ListUsers(context.Background(), arg)
-
-	require.NoError(t, err)
-	fmt.Printf("Active Users %v\n", userLists)
 
 }
 

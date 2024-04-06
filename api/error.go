@@ -37,6 +37,8 @@ func CheckError(err error, matchers ...func(err error) bool) error {
 // GetMessageFromDBError to extract a human-readable message from a database error
 func GetMessageFromDBError(err error) (string, int) {
 
+	fmt.Println("err is:", err)
+
 	if errors.Is(err, ErrorRecordNotFound) {
 		return "The requested record was not found.", http.StatusNotFound
 	} else if pgErr, ok := err.(*pgconn.PgError); ok {
@@ -60,6 +62,7 @@ func GetMessageFromUserValidationError(err error) string {
 	// Type assertion on errors
 	//if validationError, ok := err.(validator.ValidationErrors); ok {}
 	var validationError validator.ValidationErrors
+	fmt.Println("fieldName", err)
 	if errors.As(err, &validationError) {
 		var messages []string
 		for _, fieldErr := range validationError {
@@ -102,7 +105,8 @@ func GetMessageFromUserValidationError(err error) string {
 
 	}
 
-	return "An error occurred during validation." //Default validation message
+	errString := strings.Split(err.Error(), ":")[1]
+	return errString //Default validation message
 
 }
 
@@ -115,7 +119,7 @@ func formatUserValidationError(field string, err validator.FieldError) string {
 	case "alphanum":
 		return fmt.Sprintf("%s must contain only letters and numbers.", field)
 	case "min":
-		return fmt.Sprintf("%s must be at least %s characters long.", field, err.Param())
+		return fmt.Sprintf("%s must be at least %s", field, err.Param())
 	case "gt":
 		return fmt.Sprintf("%s must not be negative", field)
 	case "email":

@@ -14,14 +14,6 @@ SELECT *
 FROM users
 WHERE username = $1 LIMIT 1;
 
--- name: ListUsers :many
-SELECT *
-FROM users
-Where role != 'admin'
-  AND is_active = $1 -- Filter for active users only
-ORDER BY username LIMIT $2
-OFFSET $3;
-
 -- name: UpdateUser :one
 Update users
 SET password = coalesce(sqlc.narg(password), password),

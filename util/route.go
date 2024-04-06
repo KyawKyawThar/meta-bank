@@ -7,4 +7,5 @@ const (
 
 	CreateUser = "/register"
 	LoginUser  = "/login"
+	GetUser    = "/user"
 )

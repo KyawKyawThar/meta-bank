@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
+
 	"net/http"
 )
 
@@ -51,7 +52,10 @@ func (s *Server) setUpRouter() {
 
 	authRoutes := router.Group("/").Use(s.authMiddleware(s.tokenMaker))
 
+	authRoutes.GET(util.GetUser, s.getUser)
+
 	authRoutes.POST(util.CreateAccount, s.createAccount)
+	authRoutes.POST(util.GetAccount, s.updateAccount)
 	authRoutes.GET(util.GetAccount, s.getAccount)
 	s.router = router
 }
