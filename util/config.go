@@ -13,6 +13,7 @@ type Config struct {
 	AuthorizationTypeBearer string        `mapstructure:"AUTHORIZATION_TYPE_BEARER"`
 	AuthorizationPayloadKey string        `mapstructure:"AUTHORIZATION_PAYLOAD_KEY"`
 	AuthorizationHeaderKey  string        `mapstructure:"AUTHORIZATION_HEADER_KEY"`
+	RefreshTokenDuration    time.Duration `mapstructure:"REFRESH_TOKEN_DURATION"`
 	AccessTokenDuration     time.Duration `mapstructure:"ACCESS_TOKEN_DURATION"`
 }
 

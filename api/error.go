@@ -53,7 +53,7 @@ func GetMessageFromDBError(err error) (string, int) {
 			return "The data you provided doesn't meet the required criteria.", http.StatusBadRequest
 		}
 	}
-	return "An unexpected database error occurred.", http.StatusInternalServerError
+	return err.Error(), http.StatusInternalServerError
 
 }
 

@@ -25,7 +25,7 @@ func (s *Server) createAccount(ctx *gin.Context) {
 	authPayload := ctx.MustGet(s.config.AuthorizationPayloadKey).(*token.Payload)
 
 	arg := db.CreateAccountParams{
-		Owner:    authPayload.Issuer,
+		Owner:    authPayload.Username,
 		Currency: req.Currency,
 		Balance:  req.Balance,
 	}
@@ -60,7 +60,7 @@ func (s *Server) getAccount(ctx *gin.Context) {
 
 	authPayload := ctx.MustGet(s.config.AuthorizationPayloadKey).(*token.Payload)
 
-	if authPayload.Issuer != acc.Owner {
+	if authPayload.Username != acc.Owner {
 
 		err := errors.New("account doesn't belong to the authenticated user")
 		ctx.JSON(http.StatusUnauthorized, err)
@@ -91,8 +91,8 @@ func (s *Server) updateAccount(ctx *gin.Context) {
 	}
 
 	arg := db.UpdateAccountParams{
-		ID:      uri.ID,
-		Balance: req.Balance,
+		ID:     uri.ID,
+		Amount: req.Balance,
 	}
 
 	acc, err := s.store.UpdateAccount(ctx, arg)
@@ -104,7 +104,7 @@ func (s *Server) updateAccount(ctx *gin.Context) {
 
 	authPayload := ctx.MustGet(s.config.AuthorizationPayloadKey).(*token.Payload)
 
-	if authPayload.Issuer != acc.Owner {
+	if authPayload.Username != acc.Owner {
 
 		err := errors.New("account doesn't belong to the authenticated user")
 		ctx.JSON(http.StatusUnauthorized, err)

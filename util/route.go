@@ -8,4 +8,6 @@ const (
 	CreateUser = "/register"
 	LoginUser  = "/login"
 	GetUser    = "/user"
+
+	RenewToken = "/tokens/renew_access"
 )
