@@ -43,7 +43,7 @@ func RandomOwner() string {
 }
 
 func RandomAmount() int64 {
-	return RandomInteger(0, 100)
+	return RandomInteger(1, 100)
 }
 
 func RandomCurrency() string {
