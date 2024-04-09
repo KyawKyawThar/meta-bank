@@ -6,8 +6,10 @@ import (
 	db "github.com/HL/meta-bank/db/sqlc"
 	"github.com/HL/meta-bank/token"
 	"github.com/HL/meta-bank/util"
+	"github.com/HL/meta-bank/worker"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/hibiken/asynq"
 	"net/http"
 	"time"
 )
@@ -72,21 +74,62 @@ func (s *Server) createUser(ctx *gin.Context) {
 		return
 	}
 
-	arg := db.CreateUserParams{
-		Username: req.Username,
-		Password: hashPassword,
-		Email:    req.Email,
-		FullName: req.FullName,
-		Role:     req.Role,
-		IsActive: req.IsActive,
+	arg := db.CreateTxUserParams{
+		CreateUserParams: db.CreateUserParams{
+			Username: req.Username,
+			Password: hashPassword,
+			Email:    req.Email,
+			FullName: req.FullName,
+			Role:     req.Role,
+			IsActive: req.IsActive,
+		},
+
+		//AfterCreate func will be called after the use is created to send an
+		// async task for email verification to Redis(DistributorSendVerifyEmail will be called).
+		AfterCreate: func(user db.User) error {
+			//asynq.ProcessIn(10 * time.Second) 10 sec delay mean task will only be pickup by worker after 10sec is created
+
+			opts := []asynq.Option{
+				asynq.MaxRetry(10),
+				asynq.ProcessIn(10 * time.Second), //delay is very import
+				asynq.Queue(worker.QueueCritical),
+			}
+
+			payload := &worker.PayloadSendVerifyEmail{Username: user.Username}
+			err := s.taskDistributor.DistributorSendVerifyEmail(ctx, payload, opts...)
+			//if err != nil {
+			//	err := fmt.Errorf("failed to distribute task to send verify email %w", err)
+			//	ctx.JSON(http.StatusInternalServerError, handleErrorResponse(err))
+			//
+			//}
+			return err
+		},
 	}
 
-	user, err := s.store.CreateUser(ctx, arg)
+	txResult, err := s.store.CreateUserTx(ctx, arg)
+
 	if err != nil {
 		handleDBErrResponse(ctx, err)
 		return
 	}
-	res := newUserResponse(user)
+
+	//user, err := s.store.CreateUser(ctx, arg)
+	//opts := []asynq.Option{
+	//	asynq.MaxRetry(10),
+	//	asynq.ProcessIn(10 * time.Second),
+	//	asynq.Queue(worker.QueueCritical),
+	//}
+	//
+	//payload := &worker.PayloadSendVerifyEmail{Username: user.Username}
+	//err = s.taskDistributor.DistributorSendVerifyEmail(ctx, payload, opts...)
+	//
+	//if err != nil {
+	//	err := fmt.Errorf("failed to distribute task to send verify email %w", err)
+	//	ctx.JSON(http.StatusInternalServerError, handleErrorResponse(err))
+	//	return
+	//}
+	//
+	res := newUserResponse(txResult.User)
 	ctx.JSON(http.StatusOK, res)
 }
 

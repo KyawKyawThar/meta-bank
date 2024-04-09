@@ -20,6 +20,8 @@ test:
 	go test -v -cover ./...
 sqlc:
 	sqlc generate
+redis:
+	docker run --name redis -p 6379:6379 -d redis:7.2-alpine
 
 
 .PHONY:postgres create_db drop_db new_migration migrate_up migrate_down sqlc test migrate_up1 migrate_down1
