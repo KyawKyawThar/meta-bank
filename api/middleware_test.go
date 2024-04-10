@@ -98,7 +98,6 @@ func TestAuthMiddleware(t *testing.T) {
 
 			tc.setupAuth(t, server.tokenMaker, request)
 			server.router.ServeHTTP(recorder, request)
-			fmt.Println("recorder is:", recorder)
 			tc.checkResponse(t, recorder)
 		})
 	}

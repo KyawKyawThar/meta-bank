@@ -29,19 +29,25 @@ func (logger *logger) Printf(ctx context.Context, format string, v ...interface{
 // Debug DebugLevel is the lowest level of logging.
 // Debug logs are intended for debugging and development purposes.
 func (logger *logger) Debug(args ...interface{}) {
-	logger.Print(zerolog.DebugLevel, args)
+	logger.Print(zerolog.DebugLevel, args...)
 }
 
 // Info InfoLevel is used for general informational log messages.
 func (logger *logger) Info(args ...interface{}) {
-	logger.Print(zerolog.InfoLevel, args)
+	logger.Print(zerolog.InfoLevel, args...)
 }
 
 // Warn WarnLevel is used for undesired but relatively expected events, which may indicate a problem.
-func (logger *logger) Warn(args ...interface{}) {}
+func (logger *logger) Warn(args ...interface{}) {
+	logger.Print(zerolog.WarnLevel, args...)
+}
 
 // Error ErrorLevel is used for undesired and unexpected events that the program can recover from.
-func (logger *logger) Error(args ...interface{}) {}
+func (logger *logger) Error(args ...interface{}) {
+	logger.Print(zerolog.ErrorLevel, args...)
+}
 
 // Fatal FatalLevel is used for undesired and unexpected events that the program cannot recover from.
-func (logger *logger) Fatal(args ...interface{}) {}
+func (logger *logger) Fatal(args ...interface{}) {
+	logger.Print(zerolog.FatalLevel, args...)
+}
