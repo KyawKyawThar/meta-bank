@@ -1,3 +1,7 @@
 .idea
 ._DS_Store
+.air.toml
+.air.toml_mac
+start-air.bat
+app.env
 tmp
