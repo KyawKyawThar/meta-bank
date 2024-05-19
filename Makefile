@@ -1,7 +1,9 @@
 DB_URL=postgresql://root:secret@localhost:5432/meta-bank?sslmode=disable
 
+network:
+	docker network create bank-network
 postgres:
-	docker run --name meta-bank -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:16.2-alpine
+	docker run --name meta-bank --network bank-network -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:16.2-alpine
 create_db:
 	docker exec -it meta-bank createdb --username=root --owner=root meta-bank
 drop_db:
@@ -22,4 +24,5 @@ sqlc:
 	sqlc generate
 
 
-.PHONY:postgres create_db drop_db new_migration migrate_up migrate_down sqlc test migrate_up1 migrate_down1
+
+.PHONY:postgres create_db drop_db new_migration migrate_up migrate_down sqlc test migrate_up1 migrate_down1 network
