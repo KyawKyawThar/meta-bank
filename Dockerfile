@@ -1,0 +1,23 @@
+FROM golang:1.22.3-alpine3.18 AS builder
+
+WORKDIR /app
+
+COPY . .
+
+RUN go build -o main main.go
+
+#Run Stage
+
+FROM alpine:3.18
+
+WORKDIR /app
+
+COPY --from=builder app/main .
+
+COPY app.env .
+
+EXPOSE 88080
+
+CMD ["/app/main"]
+
+
