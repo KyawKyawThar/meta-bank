@@ -37,8 +37,6 @@ func CheckError(err error, matchers ...func(err error) bool) error {
 // GetMessageFromDBError to extract a human-readable message from a database error
 func GetMessageFromDBError(err error) (string, int) {
 
-	fmt.Println("err is:", err)
-
 	if errors.Is(err, ErrorRecordNotFound) {
 		return "The requested record was not found.", http.StatusNotFound
 	} else if pgErr, ok := err.(*pgconn.PgError); ok {

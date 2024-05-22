@@ -1,10 +1,14 @@
 package db
 
-import "github.com/jackc/pgx/v5/pgxpool"
+import (
+	"context"
+	"github.com/jackc/pgx/v5/pgxpool"
+)
 
 // Store define all functional for db execution and transactions
 type Store interface {
 	Querier
+	CreateUserTx(ctx context.Context, arg CreateTxUserParams) (CreateUserTxResult, error)
 }
 
 // SQLStore provide all functionally to execute db queries and transaction

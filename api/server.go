@@ -5,23 +5,28 @@ import (
 	db "github.com/HL/meta-bank/db/sqlc"
 	"github.com/HL/meta-bank/token"
 	"github.com/HL/meta-bank/util"
+	"github.com/HL/meta-bank/worker"
+	ginzerolog "github.com/dn365/gin-zerolog"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
-
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"net/http"
+	"os"
 )
 
 // Server serve HTTP request for our app
 type Server struct {
-	store      db.Store
-	router     *gin.Engine
-	config     util.Config
-	tokenMaker token.Maker
+	store           db.Store
+	router          *gin.Engine
+	config          util.Config
+	tokenMaker      token.Maker
+	taskDistributor worker.TaskDistributor
 }
 
 // NewServer create a new http api and setup routing
-func NewServer(store db.Store, config util.Config) (*Server, error) {
+func NewServer(store db.Store, config util.Config, taskDistributor worker.TaskDistributor) (*Server, error) {
 
 	maker, err := token.NewJWTMaker(config.TokenSymmetricKey)
 
@@ -30,9 +35,10 @@ func NewServer(store db.Store, config util.Config) (*Server, error) {
 	}
 
 	server := &Server{
-		store:      store,
-		config:     config,
-		tokenMaker: maker,
+		store:           store,
+		config:          config,
+		tokenMaker:      maker,
+		taskDistributor: taskDistributor,
 	}
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
 		v.RegisterValidation("role", validateRole)
@@ -46,6 +52,11 @@ func NewServer(store db.Store, config util.Config) (*Server, error) {
 // setUpRouter setup for different HTTP methods
 func (s *Server) setUpRouter() {
 	router := gin.Default()
+
+	if s.config.Environment == "development" {
+		router.Use(ginzerolog.Logger("GIN"))
+		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+	}
 
 	router.POST(util.CreateUser, s.createUser)
 	router.POST(util.LoginUser, s.loginUser)
