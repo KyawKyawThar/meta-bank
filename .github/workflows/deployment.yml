@@ -32,10 +32,9 @@ jobs:
           REPOSITORY: meta-bank
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          echo "Registry: $REGISTRY"
-          echo "Repository: $REPOSITORY"
-          echo "Image Tag: $IMAGE_TAG"
+          echo "Registry1: $REGISTRY"
+          echo "Repository2: $REPOSITORY"
+          echo "Image Tag3: $IMAGE_TAG"
 
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
-          docker tag $REGISTRY/$REPOSITORY:$IMAGE_TAG $REGISTRY/$REPOSITORY:$IMAGE_TAG
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
