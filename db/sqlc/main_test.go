@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"fmt"
 	"github.com/HL/meta-bank/util"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"log"
@@ -25,8 +26,9 @@ func TestMain(m *testing.M) {
 		log.Fatal("Cannot connect to database", err)
 		return
 	}
+	fmt.Println("connected to database")
 
 	store = NewStore(dbPool)
-
+	fmt.Println("store is:", store)
 	os.Exit(m.Run())
 }

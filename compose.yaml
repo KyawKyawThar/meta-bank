@@ -22,7 +22,7 @@ services:
       - DB_SOURCE
     depends_on:
       - postgres
-    entrypoint: ["/app/start.sh"]
+    entrypoint: ["/app/wait-for.sh","postgres:5432","--","/app/start.sh"]
     command: [ "/app/main" ]
 
 volumes:
