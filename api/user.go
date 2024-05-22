@@ -9,7 +9,6 @@ import (
 	"github.com/HL/meta-bank/worker"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/hibiken/asynq"
 	"net/http"
 	"time"
