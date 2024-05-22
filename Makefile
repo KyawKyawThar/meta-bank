@@ -13,13 +13,13 @@ drop_db:
 new_migration:
 	migrate create -ext sql -dir db/migrations -seq $(name)
 migrate_up:
-	migrate -path db/migrations -database $(DB_URL_Docker) -verbose up
+	migrate -path db/migrations -database $(DB_URL) -verbose up
 migrate_down:
-	migrate -path db/migrations -database $(DB_URL_Docker) -verbose down
+	migrate -path db/migrations -database $(DB_URL) -verbose down
 migrate_up1:
-	migrate -path db/migrations -database $(DB_URL_Docker) -verbose up 1
+	migrate -path db/migrations -database $(DB_URL) -verbose up 1
 migrate_down1:
-	migrate -path db/migrations -database $(DB_URL_Docker) -verbose down 1
+	migrate -path db/migrations -database $(DB_URL) -verbose down 1
 test:
 	go test -v -cover ./...
 sqlc:
