@@ -49,7 +49,7 @@ func (q *Queries) DeleteAccount(ctx context.Context, id int64) error {
 const getAccount = `-- name: GetAccount :one
 SELECT id, owner, currency, balance, created_at
 FROM accounts
-WHERE id = $1
+WHERE id = $1 LIMIT 1
 `
 
 func (q *Queries) GetAccount(ctx context.Context, id int64) (Account, error) {

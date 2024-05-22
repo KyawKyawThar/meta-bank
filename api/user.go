@@ -8,7 +8,7 @@ import (
 	"github.com/HL/meta-bank/util"
 	"github.com/HL/meta-bank/worker"
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 	"github.com/hibiken/asynq"
 	"net/http"
 	"time"
@@ -39,9 +39,12 @@ type loginRequest struct {
 }
 
 type loginResponse struct {
-	AccessToken          string           `json:"access_token"`
-	AccessTokenExpiresAt *jwt.NumericDate `json:"access_token_expires_at"`
-	User                 userResponse     `json:"user"`
+	SessionID             uuid.UUID    `json:"session_id"`
+	AccessToken           string       `json:"access_token"`
+	RefreshToken          string       `json:"refresh_token"`
+	AccessTokenExpiresAt  time.Time    `json:"access_token_expires_at"`
+	RefreshTokenExpiresAt time.Time    `json:"refresh_token_expires_at"`
+	User                  userResponse `json:"user"`
 }
 
 func newUserResponse(user db.User) userResponse {
@@ -158,15 +161,39 @@ func (s *Server) loginUser(ctx *gin.Context) {
 	accessToken, accessPayload, err := s.tokenMaker.CreateToken(user.Username, user.Role, s.config.AccessTokenDuration)
 
 	if err != nil {
-		fmt.Println("code run in here")
 		ctx.JSON(http.StatusInternalServerError, handleErrorResponse(err))
 		return
 	}
 
+	fmt.Println("content type", ctx.ContentType())
+	refreshToken, refreshPayload, err := s.tokenMaker.CreateToken(user.Username, user.Role, s.config.RefreshTokenDuration)
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, handleErrorResponse(err))
+		return
+	}
+
+	session, err := s.store.CreateSession(ctx, db.CreateSessionParams{
+		ID:           refreshPayload.ID,
+		Username:     refreshPayload.Username,
+		RefreshToken: refreshToken,
+		UserAgent:    ctx.Request.UserAgent(),
+		ClientIp:     ctx.ClientIP(),
+		IsBlocked:    false,
+		ExpiredAt:    refreshPayload.ExpiredAt,
+	})
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, handleErrorResponse(err))
+		return
+	}
 	res := loginResponse{
-		AccessToken:          accessToken,
-		AccessTokenExpiresAt: accessPayload.ExpiresAt,
-		User:                 newUserResponse(user),
+		SessionID:             session.ID,
+		AccessToken:           accessToken,
+		RefreshToken:          session.RefreshToken,
+		AccessTokenExpiresAt:  accessPayload.ExpiredAt,
+		RefreshTokenExpiresAt: session.ExpiredAt,
+		User:                  newUserResponse(user),
 	}
 
 	ctx.JSON(http.StatusOK, res)
@@ -194,7 +221,7 @@ func (s *Server) getUser(ctx *gin.Context) {
 
 	authPayload := ctx.MustGet(s.config.AuthorizationPayloadKey).(*token.Payload)
 
-	if authPayload.Issuer != user.Username {
+	if authPayload.Username != user.Username {
 
 		err := errors.New("request user doesn't belong to the authenticated user")
 		ctx.JSON(http.StatusUnauthorized, err)

@@ -7,7 +7,7 @@ VALUES ($1, $2, $3) RETURNING *;
 -- name: GetAccount :one
 SELECT *
 FROM accounts
-WHERE id = $1;
+WHERE id = $1 LIMIT 1;
 
 -- name: ListAccount :many
 SELECT *
@@ -19,7 +19,7 @@ OFFSET $3;
 
 -- name: UpdateAccount :one
 UPDATE accounts
-SET balance = balance+sqlc.arg(amount)
+SET balance = $2
 WHERE id = $1 RETURNING *;
 
 -- name: DeleteAccount :exec

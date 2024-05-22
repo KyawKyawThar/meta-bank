@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 	"time"
 )
 
@@ -11,6 +12,10 @@ var minSecretKeySize = 32
 
 type JWTMaker struct {
 	secretKey string
+}
+
+type Claims struct {
+	jwt.RegisteredClaims
 }
 
 func NewJWTMaker(secretKey string) (Maker, error) {
@@ -29,7 +34,15 @@ func (j *JWTMaker) CreateToken(username string, role string, duration time.Durat
 		return "", payload, err
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)
+	claims := &jwt.RegisteredClaims{
+		ID:        payload.ID.String(),
+		Issuer:    payload.Username,
+		Subject:   payload.Role,
+		ExpiresAt: jwt.NewNumericDate(payload.ExpiredAt),
+		IssuedAt:  jwt.NewNumericDate(payload.IssuedAt),
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	jwtToken, err := token.SignedString([]byte(j.secretKey))
 
@@ -52,7 +65,7 @@ func (j *JWTMaker) VerifyToken(tokenID string) (*Payload, error) {
 		return []byte(j.secretKey), nil
 	}
 
-	jwtToken, err := jwt.ParseWithClaims(tokenID, &Payload{}, keyFunc, jwt.WithLeeway(5*time.Second))
+	jwtToken, err := jwt.ParseWithClaims(tokenID, &Claims{}, keyFunc, jwt.WithLeeway(5*time.Second))
 
 	if err != nil {
 		if errors.Is(err, jwt.ErrTokenExpired) {
@@ -62,9 +75,23 @@ func (j *JWTMaker) VerifyToken(tokenID string) (*Payload, error) {
 		return nil, ErrInvalidToken
 	}
 
-	if payload, ok := jwtToken.Claims.(*Payload); !ok {
+	if claim, ok := jwtToken.Claims.(*Claims); !ok {
 		return nil, jwt.ErrTokenInvalidClaims
 	} else {
+		ID, err := uuid.Parse(claim.ID)
+
+		if err != nil {
+			return nil, err
+		}
+
+		payload := &Payload{
+			ID:        ID,
+			Username:  claim.Issuer,
+			Role:      claim.Subject,
+			IssuedAt:  claim.IssuedAt.Time,
+			ExpiredAt: claim.ExpiresAt.Time,
+		}
+
 		return payload, nil
 	}
 
