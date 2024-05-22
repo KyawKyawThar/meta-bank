@@ -32,5 +32,8 @@ jobs:
           REPOSITORY: metabank
           IMAGE_TAG: ${{ github.sha }}
         run: |
+          echo "Registry: $REGISTRY"
+          echo "Repository: $REPOSITORY"
+          echo "Image Tag: $IMAGE_TAG"
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
