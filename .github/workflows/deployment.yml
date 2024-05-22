@@ -36,5 +36,6 @@ jobs:
           echo "Repository2: $REPOSITORY"
           echo "Image Tag3: $IMAGE_TAG"
 
-          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
-          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+          docker build -t meta-bank .
+          docker tag meta-bank:latest public.ecr.aws/i3h4x9p4/meta-bank:latest
+          docker push public.ecr.aws/i3h4x9p4/meta-bank:latest
