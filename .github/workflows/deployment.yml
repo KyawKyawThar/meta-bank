@@ -37,6 +37,8 @@ jobs:
           echo "Repository2: $REPOSITORY"
           echo "Image Tag3: $IMAGE_TAG"
 
+          FULL_REPO_URI=$REGISTRY/$ACCOUNT_ID/$REPOSITORY
+
           docker build -t $REPOSITORY .
-          docker tag $REPOSITORY:latest $REGISTRY/$ACCOUNT_ID/$REPOSITORY:latest
-          docker push $REGISTRY/$ACCOUNT_ID/$REPOSITORY:latest
+          docker tag $REPOSITORY:latest $FULL_REPO_URI:latest
+          docker push $FULL_REPO_URI:latest
