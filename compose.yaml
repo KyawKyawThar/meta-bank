@@ -20,6 +20,7 @@ services:
       - app.env
     environment:
       - DB_SOURCE
+      - REGISTRY_HTTP_RELATIVEURLS=true
     depends_on:
       - postgres
     entrypoint: ["/app/wait-for.sh", "postgres:5432", "--", "/app/start.sh"]
