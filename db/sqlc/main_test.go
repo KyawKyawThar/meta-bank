@@ -2,7 +2,6 @@ package db
 
 import (
 	"context"
-	"fmt"
 	"github.com/HL/meta-bank/util"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"log"
@@ -20,15 +19,13 @@ func TestMain(m *testing.M) {
 		log.Fatal("cannot load config:", err)
 	}
 
-	dbPool, err := pgxpool.New(context.Background(), config.DBSource)
+	dbPool, err := pgxpool.New(context.Background(), config.DBSourceLocal)
 
 	if err != nil {
 		log.Fatal("Cannot connect to database", err)
 		return
 	}
-	fmt.Println("connected to database")
 
 	store = NewStore(dbPool)
-	fmt.Println("store is:", store)
 	os.Exit(m.Run())
 }

@@ -8,6 +8,7 @@ import (
 
 type Config struct {
 	DBSource                string        `mapstructure:"DB_SOURCE"`
+	DBSourceLocal           string        `mapstructure:"DB_SOURCE_LOCAL"`
 	HTTPServerAddress       string        `mapstructure:"HTTP_SERVER_ADDRESS"`
 	TokenSymmetricKey       string        `mapstructure:"TOKEN_SYMMETRIC_KEY"`
 	AuthorizationTypeBearer string        `mapstructure:"AUTHORIZATION_TYPE_BEARER"`
