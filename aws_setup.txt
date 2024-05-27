@@ -1,0 +1,7 @@
+generate a random string of hexadecimal characters = openssl rand -hex 64 | head -c 32
+
+To_setup and configure aws service from terminal
+1. aws configure
+2.ls -l ~/.aws to check hidden aws config and credentials files
+3.cat ~/.aws/credentials
+4.aws secretsmanager get-secret-value --secret-id meta_bank
