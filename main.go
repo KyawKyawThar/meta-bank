@@ -5,8 +5,6 @@ import (
 	"github.com/HL/meta-bank/api"
 	db "github.com/HL/meta-bank/db/sqlc"
 	"github.com/HL/meta-bank/util"
-	"github.com/HL/meta-bank/worker"
-	"github.com/hibiken/asynq"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rs/zerolog/log"
 )
@@ -34,32 +32,51 @@ func main() {
 
 	store := db.NewStore(connPool)
 
-	redsOpts := asynq.RedisClientOpt{
-		Addr: config.RedisAddress,
-	}
+	//redsOpts := asynq.RedisClientOpt{
+	//	Addr: config.RedisAddress,
+	//}
+	//
+	//taskDistributor := worker.NewRedisTaskDistributor(redsOpts)
 
-	taskDistributor := worker.NewRedisTaskDistributor(redsOpts)
-
-	go runTaskProcessor(redsOpts, store)
-	runGinServer(store, config, taskDistributor)
+	//go runTaskProcessor(redsOpts, store)
+	runGinServer(store, config)
 }
 
-func runTaskProcessor(redisOpts asynq.RedisClientOpt, store db.Store) {
-	taskProcessor := worker.NewRedisTaskProcessor(redisOpts, store)
-	log.Info().Msg("Starting task processor from main")
-
-	err := taskProcessor.Start()
-
-	if err != nil {
-		log.Fatal().Err(err).Msg("Failed to start task processor")
-	}
-}
+//func runTaskProcessor(redisOpts asynq.RedisClientOpt, store db.Store) {
+//	taskProcessor := worker.NewRedisTaskProcessor(redisOpts, store)
+//	log.Info().Msg("Starting task processor from main")
+//
+//	err := taskProcessor.Start()
+//
+//	if err != nil {
+//		log.Fatal().Err(err).Msg("Failed to start task processor")
+//	}
+//}
 
 // runGinServer server using Gin
-func runGinServer(store db.Store, config util.Config, taskDistributor worker.TaskDistributor) {
+//func runGinServer(store db.Store, config util.Config, taskDistributor worker.TaskDistributor) {
+//
+//	//create server
+//	s, err := api.NewServer(store, config, taskDistributor)
+//
+//	if err != nil {
+//		log.Fatal().Err(err).Msg("Cannot create server")
+//	}
+//
+//	//start server
+//	err = s.Start(config.HTTPServerAddress)
+//
+//	if err != nil {
+//		log.Fatal().Err(err).Msg("Cannot Start Sever..")
+//	}
+//
+//}
+
+// runGinServer server using Gin
+func runGinServer(store db.Store, config util.Config) {
 
 	//create server
-	s, err := api.NewServer(store, config, taskDistributor)
+	s, err := api.NewServer(store, config)
 
 	if err != nil {
 		log.Fatal().Err(err).Msg("Cannot create server")

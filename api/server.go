@@ -26,7 +26,31 @@ type Server struct {
 }
 
 // NewServer create a new http api and setup routing
-func NewServer(store db.Store, config util.Config, taskDistributor worker.TaskDistributor) (*Server, error) {
+//func NewServer(store db.Store, config util.Config, taskDistributor worker.TaskDistributor) (*Server, error) {
+//
+//	maker, err := token.NewJWTMaker(config.TokenSymmetricKey)
+//
+//	if err != nil {
+//		return nil, fmt.Errorf("cannot create token maker %w", err)
+//	}
+//
+//	server := &Server{
+//		store:           store,
+//		config:          config,
+//		tokenMaker:      maker,
+//		taskDistributor: taskDistributor,
+//	}
+//	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+//		v.RegisterValidation("role", validateRole)
+//		v.RegisterValidation("currency", validateCurrency)
+//	}
+//
+//	server.setUpRouter()
+//	return server, nil
+//}
+
+// NewServer create a new http api and setup routing
+func NewServer(store db.Store, config util.Config) (*Server, error) {
 
 	maker, err := token.NewJWTMaker(config.TokenSymmetricKey)
 
@@ -35,10 +59,9 @@ func NewServer(store db.Store, config util.Config, taskDistributor worker.TaskDi
 	}
 
 	server := &Server{
-		store:           store,
-		config:          config,
-		tokenMaker:      maker,
-		taskDistributor: taskDistributor,
+		store:      store,
+		config:     config,
+		tokenMaker: maker,
 	}
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
 		v.RegisterValidation("role", validateRole)

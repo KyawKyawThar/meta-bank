@@ -2,7 +2,7 @@ DB_URL=postgresql://root:secret@localhost:5432/meta-bank?sslmode=disable
 
 DB_URL_Docker=postgresql://root:secret@postgres:5432/meta-bank?sslmode=disable
 
-DB_URL_RDS=postgresql://root:metachain@meta-bank.crsqiu0w479a.us-east-1.rds.amazonaws.com:5432/meta_bank
+DB_URL_RDS=postgresql://root:w0QUkLGYSPv1y6dkmLos@meta-bank.crsqiu0w479a.us-east-1.rds.amazonaws.com:5432/meta_bank
 
 network:
 	docker network create bank-network

@@ -1,0 +1,32 @@
+# .air.toml
+
+# Configurations
+[build]
+bin = "bin\\app.exe"          # Binary output file
+cmd = "go build -o bin\\app.exe"  # Command to build the binary
+exclude_dir = ["assets", "tmp"] # Excluded directories
+include_ext = ["go", "tpl", "tmpl", "html"] # Watched file extensions
+exclude_ext = ["go", "swp", "tmp"] # Ignored file extensions
+exclude_regex = ["_test\\.go"]    # Ignored file patterns
+
+# Watch directories
+watch_dir = ["."]
+watch_recursive = true
+
+# Log configurations
+[log]
+time = true
+
+# Development run command
+[dev]
+cmd = "bin\\app.exe"           # Command to run the app
+delay = 1000                   # Delay before running the command (ms)
+stop_on_error = true           # Stop running on build error
+
+# Color configurations for log output
+[color]
+main = "cyan"
+watching = "purple"
+restart = "yellow"
+building = "blue"
+running = "green"

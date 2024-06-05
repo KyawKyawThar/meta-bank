@@ -2,9 +2,7 @@ package api
 
 import (
 	"github.com/HL/meta-bank/util"
-	"github.com/HL/meta-bank/worker"
 	"github.com/gin-gonic/gin"
-	"github.com/hibiken/asynq"
 	"github.com/stretchr/testify/require"
 	"os"
 	"testing"
@@ -23,12 +21,13 @@ func newTestServer(t *testing.T) *Server {
 		AuthorizationTypeBearer: authorizationTypeBearer,
 		AuthorizationHeaderKey:  authorizationHeaderKey}
 
-	redsOpts := asynq.RedisClientOpt{
-		Addr: config.RedisAddress,
-	}
-	taskDistributor := worker.NewRedisTaskDistributor(redsOpts)
-	server, err := NewServer(nil, config, taskDistributor)
+	//redsOpts := asynq.RedisClientOpt{
+	//	Addr: config.RedisAddress,
+	//}
+	//taskDistributor := worker.NewRedisTaskDistributor(redsOpts)
+	//server, err := NewServer(nil, config, taskDistributor)
 
+	server, err := NewServer(nil, config)
 	require.NoError(t, err)
 
 	return server
