@@ -74,7 +74,6 @@ func (s *Server) createUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusUnauthorized, handleErrorResponse(err))
 		return
 	}
-	fmt.Println("kkt..", hashPassword)
 
 	arg := db.CreateUserParams{
 		Username: req.Username,
