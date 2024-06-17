@@ -1,5 +1,4 @@
 .idea
 ._DS_Store
-tmp
 app.env
 aws_setup.txt
