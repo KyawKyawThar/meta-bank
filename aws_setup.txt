@@ -8,15 +8,38 @@ use AWS service:
 2.IAM
 3.RDS
 4.Secret Manager
+5.EC2 for pull docker image
+6.EKS
 
 generate a random string of hexadecimal characters = openssl rand -hex 64 | head -c 32
 
 To_setup and configure aws service from terminal
 1. aws configure
 2.ls -l ~/.aws to check hidden aws config and credentials files
-3.cat ~/.aws/credentials
+3.cat ~/.aws/credentials ** (to check aws credentials)
 4.aws secretsmanager get-secret-value --secret-id meta_bank
 5 use help comment if you don't know
 6 aws secretsmanager get-secret-value --secret-id meta_bank --query SecretString --output text( will output json format)
 7 aws secretsmanager get-secret-value --secret-id meta_bank --query SecretString --output text | jq -r 'to_entries|map("\(.key)=\(.value)")|.[]
 aws secretsmanager get-secret-value --secret-id meta_bank --query SecretString --output text | jq -r 'to_entries|map("\(.key)=\(.value)")|.[] > app.env (copy to app.env)
+8.docker pull public.ecr.aws/i3h4x9p4/meta-bank:latest
+9.docker run --platform linux/amd64 -p 8080:8080 public.ecr.aws/i3h4x9p4/meta-bank:latest
+
+##EKS service
+To connect kubectl to aws eks service first fetch aws eks cluster information and store in config file
+1.aws eks update-kubeconfig --name meta-bank --region us-east-1
+2.cat ~/.kube/config  (open kube config)
+3.kubectl config use-context arn:aws:eks:us-east-1:569776826105:cluster/meta-bank (switch to context)
+4.aws sts get-caller-identity
+5.kubectl cluster-info **
+6.export AWS_PROFILE=github (automatically deploy app for us whenever we use push changes to master class)
+github must be from one of cat ~/.aws/credentials
+7.kubectl get service
+8.kubectl get pods
+9.changed aws profile (export AWS_PROFILE=github)
+10.kubectl apply -f eks/aws-auth.yaml  (to apply file changes)
+11.to check domain is active or not use nslookup api.meta-bank.org
+
+//k9s comments
+:ns+enter
+
