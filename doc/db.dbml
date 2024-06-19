@@ -1,0 +1,29 @@
+Project meta_bank {
+  database_type: 'PostgreSQL'
+  Note: '''
+    # Meta Bank Database
+  '''
+}
+Table users as U {
+  username varchar [pk]
+  password varchar [not null]
+  email varchar [unique,not null]
+  full_name varchar [not null]
+  role varchar [default: 'depositor']
+  is_varified_email bool [default: false]
+  password_changed_at timestamptz [not null, default: '0001-01-01']
+  created_at timestamptz [not null, default: `now()`]
+}
+
+Table accounts as A {
+  ID bigserial [pk]
+  owner varchar [ref: > U.username, not null]
+  currency varchar [not null]
+  balance bigint [not null]
+  created_at timestamptz [not null, default: `now()`]
+
+Indexes {
+  owner
+  (owner,currency) [unique]
+}
+}
