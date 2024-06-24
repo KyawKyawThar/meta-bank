@@ -8,6 +8,7 @@ import (
 	"github.com/HL/meta-bank/util"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 	"net/http"
 	"time"
 )
@@ -19,6 +20,13 @@ type userRequest struct {
 	FullName string `json:"fullName" binding:"required"`
 	Role     string `json:"role" binding:"required,role"`
 	IsActive bool   `json:"isActive"`
+}
+
+type updateRequest struct {
+	Username *string `json:"username" `
+	Email    *string `json:"email" `
+	Password *string `json:"password"`
+	FullName *string `json:"fullName"`
 }
 
 type userResponse struct {
@@ -61,9 +69,13 @@ func (s *Server) createUser(ctx *gin.Context) {
 
 	var req userRequest
 
-	req.IsActive = true
+	if req.Role == "" {
+		req.Role = util.DEPOSITOR
+	}
 
+	req.IsActive = true
 	if err := ctx.ShouldBindJSON(&req); err != nil {
+
 		handleUserValidationErrResponse(ctx, err)
 		return
 	}
@@ -143,6 +155,12 @@ func (s *Server) createUser(ctx *gin.Context) {
 	//ctx.JSON(http.StatusOK, res)
 
 	user, err := s.store.CreateUser(ctx, arg)
+
+	if err != nil {
+		handleDBErrResponse(ctx, err)
+		return
+	}
+
 	res := newUserResponse(user)
 	ctx.JSON(http.StatusOK, res)
 }
@@ -157,7 +175,9 @@ func (s *Server) loginUser(ctx *gin.Context) {
 	}
 
 	user, err := s.store.GetUser(ctx, req.Username)
+
 	if err != nil {
+
 		handleDBErrResponse(ctx, err)
 		return
 	}
@@ -176,7 +196,6 @@ func (s *Server) loginUser(ctx *gin.Context) {
 		return
 	}
 
-	fmt.Println("content type", ctx.ContentType())
 	refreshToken, refreshPayload, err := s.tokenMaker.CreateToken(user.Username, user.Role, s.config.RefreshTokenDuration)
 
 	if err != nil {
@@ -241,4 +260,99 @@ func (s *Server) getUser(ctx *gin.Context) {
 	res := newUserResponse(user)
 
 	ctx.JSON(http.StatusOK, res)
+}
+
+func (s *Server) updateUser(ctx *gin.Context) {
+
+	var req updateRequest
+	var hashPassword string
+	var username string
+
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		handleUserValidationErrResponse(ctx, err)
+		return
+	}
+
+	if req.Username == nil {
+		authPayload := ctx.MustGet(s.config.AuthorizationPayloadKey).(*token.Payload)
+
+		username = authPayload.Username
+	} else {
+		username = getStringValue(req.Username)
+
+	}
+
+	if req.Email != nil {
+		email := getStringValue(req.Email)
+
+		err := util.ValidateEmail(email)
+
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, handleErrorResponse(err))
+			return
+		}
+
+	}
+
+	if req.FullName != nil {
+
+		err := util.ValidateFullName(*req.FullName)
+
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, handleErrorResponse(err))
+			return
+		}
+
+	}
+	if req.Password != nil {
+		var err error
+		hashPassword, err = util.HashPassword(*req.Password)
+
+		if err != nil {
+			ctx.JSON(http.StatusUnauthorized, handleErrorResponse(err))
+			return
+		}
+	}
+
+	arg := db.UpdateUserParams{
+		Password: pgtype.Text{
+			Valid:  req.Password != nil,
+			String: hashPassword,
+		},
+		Email: pgtype.Text{
+			Valid:  req.Email != nil,
+			String: getStringValue(req.Email),
+		},
+
+		FullName: pgtype.Text{
+			Valid:  req.FullName != nil,
+			String: getStringValue(req.FullName),
+		},
+		PasswordChangedAt: pgtype.Timestamptz{
+			Time:  time.Now(),
+			Valid: true,
+		},
+		Username: username,
+	}
+
+	updateUser, err := s.store.UpdateUser(ctx, arg)
+
+	if err != nil {
+		handleDBErrResponse(ctx, err)
+		return
+	}
+
+	res := newUserResponse(updateUser)
+	ctx.JSON(http.StatusOK, res)
+}
+
+func (s *Server) deleteUser(ctx *gin.Context) {
+	fmt.Println("deleting user...")
+}
+
+func getStringValue(s *string) string {
+	if s != nil {
+		return *s
+	}
+	return "" // Return empty string if s is nil
 }

@@ -89,9 +89,12 @@ func (s *Server) setUpRouter() {
 	authRoutes := router.Group("/").Use(s.authMiddleware(s.tokenMaker))
 
 	authRoutes.GET(util.GetUser, s.getUser)
+	authRoutes.POST(util.UpdateUser, s.updateUser)
+	authRoutes.DELETE(util.DeleteUser, s.deleteUser)
 
 	authRoutes.POST(util.CreateAccount, s.createAccount)
 	authRoutes.GET(util.GetAccount, s.getAccount)
+
 	s.router = router
 }
 
@@ -103,6 +106,7 @@ func (s *Server) Start(address string) error {
 }
 
 func handleDBErrResponse(c *gin.Context, err error) {
+	fmt.Println("handleErrResponse")
 	message, statusCode := GetMessageFromDBError(err)
 	c.JSON(statusCode, gin.H{"Error": message})
 }

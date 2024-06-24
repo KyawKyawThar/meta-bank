@@ -40,9 +40,10 @@ func GetMessageFromDBError(err error) (string, int) {
 	if errors.Is(err, ErrorRecordNotFound) {
 		return "The requested record was not found.", http.StatusNotFound
 	} else if pgErr, ok := err.(*pgconn.PgError); ok {
+		fmt.Println("pg err is:", pgErr.Message)
 		switch pgErr.Code {
 		case ErrorUniqueViolation.Code: // duplicate value is being inserted for a column or set of columns that have a unique constraint defined.
-			return "A record with the same unique identifier already exists.", http.StatusForbidden
+			return pgErr.Message, http.StatusConflict
 		case ErrForeignViolation.Code:
 			return "The operation cannot be completed because it would violate a foreign key constraint.", http.StatusForbidden
 		case ErrNotNullViolation.Code:

@@ -18,8 +18,7 @@ func main() {
 	}
 
 	//To connect DB string
-	connPool, err := pgxpool.New(context.Background(), config.DBSource)
-
+	connPool, err := pgxpool.New(context.Background(), config.DBSourceLocal)
 	if err != nil {
 		// Fatal starts a new message with fatal level(4). The os.Exit(1) function
 		// is called by the Msg method.
