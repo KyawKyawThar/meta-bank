@@ -11,11 +11,11 @@ type CreateUserTxResult struct {
 	User User
 }
 
-func (s *SQLStore) CreateUserTx(ctx context.Context, arg CreateTxUserParams) (CreateUserTxResult, error) {
+func (store *SQLStore) CreateUserTx(ctx context.Context, arg CreateTxUserParams) (CreateUserTxResult, error) {
 
 	var res CreateUserTxResult
 
-	err := s.execTx(ctx, func(queries *Queries) error {
+	err := store.execTx(ctx, func(queries *Queries) error {
 
 		var err error
 		res.User, err = queries.CreateUser(ctx, arg.CreateUserParams)

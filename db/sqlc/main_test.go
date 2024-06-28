@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-var store Store
+var testStore Store
 
 func TestMain(m *testing.M) {
 
@@ -26,6 +26,6 @@ func TestMain(m *testing.M) {
 		return
 	}
 
-	store = NewStore(dbPool)
+	testStore = NewStore(dbPool)
 	os.Exit(m.Run())
 }

@@ -1,13 +1,3 @@
-CREATE TABLE accounts
-(
-    id         bigserial PRIMARY KEY,
-    owner      varchar     NOT NULL,
-    currency   varchar     NOT NULL,
-    balance    bigint      NOT NULL,
-    created_at timestamptz NOT NULL DEFAULT (now())
-);
-
-
 CREATE TABLE users
 (
     username            varchar PRIMARY KEY,
@@ -17,6 +7,15 @@ CREATE TABLE users
     is_active            boolean     NOT NULL DEFAULT true,
     password_changed_at timestamptz NOT NULL DEFAULT '0001-01-01 00:00:00z',
     created_at          timestamptz NOT NULL DEFAULT (now())
+);
+
+CREATE TABLE accounts
+(
+    id         bigserial PRIMARY KEY,
+    owner      varchar     NOT NULL,
+    currency   varchar     NOT NULL,
+    balance    bigint      NOT NULL,
+    created_at timestamptz NOT NULL DEFAULT (now())
 );
 
 CREATE INDEX ON accounts (owner);

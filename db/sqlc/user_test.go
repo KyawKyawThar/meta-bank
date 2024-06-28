@@ -23,7 +23,7 @@ func createRandomUser(t *testing.T) User {
 		IsActive: true,
 	}
 
-	user, err := store.CreateUser(context.Background(), arg)
+	user, err := testStore.CreateUser(context.Background(), arg)
 
 	require.NoError(t, err)
 	require.NotEmpty(t, user)
@@ -46,7 +46,7 @@ func TestCreateUser(t *testing.T) {
 func TestGetUser(t *testing.T) {
 	user1 := createRandomUser(t)
 
-	user2, err := store.GetUser(context.Background(), user1.Username)
+	user2, err := testStore.GetUser(context.Background(), user1.Username)
 
 	require.NoError(t, err)
 	require.NotEmpty(t, user2)
@@ -71,7 +71,7 @@ func TestUpdateUserOnlyFullName(t *testing.T) {
 			Valid:  true,
 		},
 	}
-	updateUser, err := store.UpdateUser(context.Background(), arg)
+	updateUser, err := testStore.UpdateUser(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, updateUser)
 
@@ -98,7 +98,7 @@ func TestUpdateUserOnlyPassword(t *testing.T) {
 			Valid:  true,
 		},
 	}
-	updateUser, err := store.UpdateUser(context.Background(), arg)
+	updateUser, err := testStore.UpdateUser(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, updateUser)
 
@@ -120,7 +120,7 @@ func TestUpdateUserOnlyEmail(t *testing.T) {
 			Valid:  true,
 		},
 	}
-	updateUser, err := store.UpdateUser(context.Background(), arg)
+	updateUser, err := testStore.UpdateUser(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, updateUser)
 
@@ -135,6 +135,6 @@ func TestUpdateUserOnlyEmail(t *testing.T) {
 func TestDeleteUser(t *testing.T) {
 	user := createRandomUser(t)
 
-	err := store.DeleteUser(context.Background(), user.Username)
+	err := testStore.DeleteUser(context.Background(), user.Username)
 	require.NoError(t, err)
 }
