@@ -16,7 +16,7 @@ Table users as U {
 }
 
 Table accounts as A {
-  ID bigserial [pk]
+  id bigserial [pk]
   owner varchar [ref: > U.username, not null]
   currency varchar [not null]
   balance bigint [not null]
@@ -26,4 +26,41 @@ Indexes {
   owner
   (owner,currency) [unique]
 }
+
+}
+
+Table entries as E {
+  id bigserial [pk]
+  account_id bigint [ref: > A.id, not null]
+  amount bigint [not null, note: 'can be negative or positive']
+  created_at timestamptz [not null, default: `now()`]
+
+
+  Indexes {
+    account_id
+  }
+}
+
+Table transfers as T {
+  id bigserial [pk]
+  from_account_id bigint [ref: > A.id, not null]
+  to_account_id bigint [ref: > A.id, not null]
+  amount bigint [not null, note: 'must be positive']
+
+  indexes {
+    from_account_id
+    to_account_id
+    (from_account_id,to_account_id)
+  }
+}
+
+Table sessions as S {
+  id bigint [pk]
+  username varchar [ref: > U.username]
+  refresh_toekn varchar [not null]
+  user_agent varchar [not null]
+  client_ip varchar [not null]
+  is_blocked bool [not null,default: false]
+  expires_at timestamptz [not null]
+  created_at timestamptz [not null, default: `now()`]
 }
