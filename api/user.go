@@ -17,7 +17,7 @@ type userRequest struct {
 	Password string `json:"password" binding:"required,min=7"`
 	Email    string `json:"email" binding:"required,email"`
 	FullName string `json:"fullName" binding:"required"`
-	Role     string `json:"role" binding:"required,role"`
+	Role     string `json:"role" `
 	IsActive bool   `json:"isActive"`
 }
 

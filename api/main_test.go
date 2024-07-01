@@ -1,6 +1,7 @@
 package api
 
 import (
+	db "github.com/HL/meta-bank/db/sqlc"
 	"github.com/HL/meta-bank/util"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/require"
@@ -14,7 +15,7 @@ const (
 	authorizationHeaderKey  = "authorization"
 )
 
-func newTestServer(t *testing.T) *Server {
+func newTestServer(t *testing.T, store db.Store) *Server {
 
 	config := util.Config{TokenSymmetricKey: util.RandomString(32),
 		AccessTokenDuration:     time.Minute,
@@ -27,7 +28,7 @@ func newTestServer(t *testing.T) *Server {
 	//taskDistributor := worker.NewRedisTaskDistributor(redsOpts)
 	//server, err := NewServer(nil, config, taskDistributor)
 
-	server, err := NewServer(nil, config)
+	server, err := NewServer(store, config)
 	require.NoError(t, err)
 
 	return server
