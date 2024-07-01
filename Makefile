@@ -40,6 +40,5 @@ db_schema:
 mock:
 	mockgen -package mockdb -destination db/mock/store.go github.com/HL/meta-bank/db/sqlc Store
 
-
 .PHONY:postgres create_db drop_db new_migration migrate_up migrate_down sqlc test network db_docs db_schema
 
