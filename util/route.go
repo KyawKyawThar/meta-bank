@@ -3,7 +3,7 @@ package util
 const (
 	CreateAccount = "/account"
 	GetAccount    = "/account/:id"
-	ListAccounts  = "/accounts"
+	ListAccount   = "/accounts"
 
 	CreateUser = "/register"
 	LoginUser  = "/login"

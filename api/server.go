@@ -92,6 +92,7 @@ func (s *Server) setUpRouter() {
 
 	authRoutes.POST(util.CreateAccount, s.createAccount)
 	authRoutes.GET(util.GetAccount, s.getAccount)
+	authRoutes.GET(util.ListAccount, s.ListAccount)
 	s.router = router
 }
 
@@ -114,4 +115,9 @@ func handleUserValidationErrResponse(c *gin.Context, err error) {
 
 func handleErrorResponse(err error) gin.H {
 	return gin.H{"error": err.Error()}
+}
+
+func handleCustomErrorResponse(c *gin.Context, statusCode int, err error) {
+
+	c.JSON(statusCode, gin.H{"Error:": err.Error()})
 }

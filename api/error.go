@@ -60,7 +60,7 @@ func GetMessageFromUserValidationError(err error) string {
 	// Type assertion on errors
 	//if validationError, ok := err.(validator.ValidationErrors); ok {}
 	var validationError validator.ValidationErrors
-	fmt.Println("fieldName", err)
+	fmt.Println("GetMessageFromUserValidationError", err)
 	if errors.As(err, &validationError) {
 		var messages []string
 		for _, fieldErr := range validationError {
@@ -104,6 +104,7 @@ func GetMessageFromUserValidationError(err error) string {
 	}
 
 	errString := strings.Split(err.Error(), ":")[1]
+
 	return errString //Default validation message
 
 }
