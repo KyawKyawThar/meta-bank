@@ -12,8 +12,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
-	"github.com/golang/mock/gomock"
-	"github.com/stretchr/testify/require"
 
 	"io"
 	"net/http"
@@ -144,7 +142,6 @@ func TestCreateAccountAPI(t *testing.T) {
 
 	}
 }
-
 
 func TestGetAccountAPI(t *testing.T) {
 
