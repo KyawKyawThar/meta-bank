@@ -39,7 +39,9 @@ db_schema:
 #Store is from Store interface
 mock:
 	mockgen -package mockdb -destination db/mock/store.go github.com/HL/meta-bank/db/sqlc Store
+mock_source:
+	mockgen -source=/Users/kkt/go/src/meta-bank/db/sqlc/store.go -package mockdb -destination db/mock/store.go
 
 
-.PHONY:postgres create_db drop_db new_migration migrate_up migrate_down sqlc test network db_docs db_schema
+.PHONY:postgres create_db drop_db new_migration migrate_up migrate_down sqlc test network db_docs db_schema mock_source
 
