@@ -1,9 +1,9 @@
 package db
 
 import (
+	"context"
 	"fmt"
 	"github.com/stretchr/testify/require"
-	"golang.org/x/net/context"
 	"testing"
 )
 
