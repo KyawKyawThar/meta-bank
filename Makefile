@@ -43,5 +43,5 @@ mock_source:
 	mockgen -source=/Users/kkt/go/src/meta-bank/db/sqlc/store.go -package mockdb -destination db/mock/store.go
 
 
-.PHONY:postgres create_db drop_db new_migration migrate_up migrate_down sqlc test network db_docs db_schema mock_source
+.PHONY:postgres create_db drop_db new_migration migrate_up migrate_down sqlc test network db_docs db_schema mock_source mock
 

@@ -12,6 +12,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
+	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/require"
 
 	"io"
 	"net/http"
@@ -143,6 +145,7 @@ func TestCreateAccountAPI(t *testing.T) {
 	}
 }
 
+
 func TestGetAccountAPI(t *testing.T) {
 
 	user := randomUser(t)
@@ -179,6 +182,7 @@ func TestGetAccountAPI(t *testing.T) {
 			name:      "UnauthorizedUser",
 			accountID: account.ID,
 			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
+
 				addAuthorization(t, tokenMaker, request, "unauthorized_user", util.DEPOSITOR, time.Minute, authorizationTypeBearer)
 			},
 			buildStubs: func(store *mockdb.MockStore) {
