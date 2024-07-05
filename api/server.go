@@ -117,7 +117,6 @@ func handleErrorResponse(err error) gin.H {
 	return gin.H{"error": err.Error()}
 }
 
-func handleCustomErrorResponse(c *gin.Context, statusCode int, err error) {
-
-	c.JSON(statusCode, gin.H{"Error:": err.Error()})
+func handleCustomErrorResponse(err error) gin.H {
+	return gin.H{"error": err.Error()}
 }

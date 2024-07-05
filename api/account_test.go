@@ -22,7 +22,7 @@ import (
 
 func TestCreateAccountAPI(t *testing.T) {
 
-	user := randomUser(t)
+	user, _ := randomUser(t)
 
 	account := randomAccount(user.Username)
 	currency := account.Currency
@@ -56,6 +56,7 @@ func TestCreateAccountAPI(t *testing.T) {
 			},
 			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusOK, recorder.Code)
+				requiredBodyMatchAccount(t, recorder.Body, account)
 			},
 		},
 		{
@@ -119,7 +120,6 @@ func TestCreateAccountAPI(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 
 			ctrl := gomock.NewController(t)
-			//store := mockdb.NewMockStore(ctrl)
 
 			store := mockdb.NewMockStore(ctrl)
 			tc.buildStub(store)
@@ -145,7 +145,7 @@ func TestCreateAccountAPI(t *testing.T) {
 
 func TestGetAccountAPI(t *testing.T) {
 
-	user := randomUser(t)
+	user, _ := randomUser(t)
 
 	account := randomAccount(user.Username)
 
@@ -264,15 +264,14 @@ func TestGetAccountAPI(t *testing.T) {
 
 }
 
-func TestGetAccountsAPI(t *testing.T) {
-	user := randomUser(t)
-
+func TestGetAccountsListAPI(t *testing.T) {
+	user, _ := randomUser(t)
 	n := 5
 
 	accounts := make([]db.Account, n)
 
 	for i := 0; i < n; i++ {
-		accounts[i] = randomAccount(user.Username)
+		accounts[i] = randomAccount("nicholas")
 	}
 
 	type Query struct {
@@ -287,6 +286,7 @@ func TestGetAccountsAPI(t *testing.T) {
 		buildStubs    func(store *mockdb.MockStore)
 		checkResponse func(t *testing.T, recorder *httptest.ResponseRecorder)
 	}{
+
 		{
 			name: "Ok",
 			query: Query{

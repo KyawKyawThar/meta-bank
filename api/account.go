@@ -84,20 +84,19 @@ func (s *Server) ListAccount(ctx *gin.Context) {
 		if req.PageID < 1 {
 
 			err := errors.New("PageID must be at least 1")
-
-			handleCustomErrorResponse(ctx, http.StatusBadRequest, err)
+			ctx.JSON(http.StatusBadRequest, handleCustomErrorResponse(err))
 			return
 		}
 		if req.PageSize < 5 || req.PageSize > 10 {
 
 			err := errors.New("PageSize must be between 3 and 10")
-			handleCustomErrorResponse(ctx, http.StatusBadRequest, err)
-
+			ctx.JSON(http.StatusBadRequest, handleCustomErrorResponse(err))
 			return
 		}
 	}
 
 	authPayload := ctx.MustGet(s.config.AuthorizationPayloadKey).(*token.Payload)
+
 	arg := db.ListAccountParams{
 		Owner:  authPayload.Username,
 		Limit:  req.PageSize,

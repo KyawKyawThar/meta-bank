@@ -143,6 +143,11 @@ func (s *Server) createUser(ctx *gin.Context) {
 	//ctx.JSON(http.StatusOK, res)
 
 	user, err := s.store.CreateUser(ctx, arg)
+
+	if err != nil {
+		handleDBErrResponse(ctx, err)
+		return
+	}
 	res := newUserResponse(user)
 	ctx.JSON(http.StatusOK, res)
 }
