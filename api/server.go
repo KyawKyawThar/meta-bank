@@ -90,9 +90,16 @@ func (s *Server) setUpRouter() {
 
 	authRoutes.GET(util.GetUser, s.getUser)
 
-	authRoutes.POST(util.CreateAccount, s.createAccount)
 	authRoutes.GET(util.GetAccount, s.getAccount)
+	authRoutes.POST(util.CreateAccount, s.createAccount)
 	authRoutes.GET(util.ListAccount, s.ListAccount)
+
+	authRoutes.POST(util.CreateTransfer, s.createTransferTx)
+	authRoutes.GET(util.GetTransfer, s.getTransfer)
+	authRoutes.GET(util.ListTransfer, s.ListTransfer)
+
+	authRoutes.GET(util.GetEntry, s.getEntry)
+	authRoutes.GET(util.ListEntry, s.listEntry)
 	s.router = router
 }
 

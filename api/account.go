@@ -63,8 +63,8 @@ func (s *Server) getAccount(ctx *gin.Context) {
 	if authPayload.Username != acc.Owner {
 
 		err := errors.New("account doesn't belong to the authenticated user")
-		ctx.JSON(http.StatusUnauthorized, err)
-
+		ctx.JSON(http.StatusUnauthorized, handleCustomErrorResponse(err))
+		return
 	}
 
 	ctx.JSON(http.StatusOK, acc)
@@ -93,6 +93,8 @@ func (s *Server) ListAccount(ctx *gin.Context) {
 			ctx.JSON(http.StatusBadRequest, handleCustomErrorResponse(err))
 			return
 		}
+		handleUserValidationErrResponse(ctx, err)
+		return
 	}
 
 	authPayload := ctx.MustGet(s.config.AuthorizationPayloadKey).(*token.Payload)

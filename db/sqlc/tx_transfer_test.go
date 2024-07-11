@@ -55,8 +55,8 @@ func TestTransferTx(t *testing.T) {
 
 		transfer := result.Transfer
 		require.NotEmpty(t, transfer)
-		require.Equal(t, acc1.ID, transfer.FromAccountID)
-		require.Equal(t, acc2.ID, transfer.ToAccountID)
+		require.Equal(t, acc1.ID, transfer.ToAccountID)
+		require.Equal(t, acc2.ID, transfer.FromAccountID)
 		require.Equal(t, amount, transfer.Amount)
 
 		require.NotZero(t, transfer.ID)
@@ -66,22 +66,10 @@ func TestTransferTx(t *testing.T) {
 		require.NoError(t, err)
 
 		// check entries
-		fromEntry := result.FromEntry
-		require.NotEmpty(t, fromEntry)
-
-		require.Equal(t, acc1.ID, fromEntry.AccountID)
-		require.Equal(t, -amount, fromEntry.Amount)
-
-		require.NotZero(t, fromEntry.ID)
-		require.NotZero(t, fromEntry.Amount)
-		require.NotZero(t, fromEntry.CreatedAt)
-
-		_, err = testStore.GetEntry(context.Background(), fromEntry.ID)
-		require.NoError(t, err)
-
 		toEntry := result.ToEntry
 		require.NotEmpty(t, toEntry)
-		require.Equal(t, acc2.ID, toEntry.AccountID)
+
+		require.Equal(t, acc1.ID, toEntry.AccountID)
 		require.Equal(t, amount, toEntry.Amount)
 
 		require.NotZero(t, toEntry.ID)
@@ -89,6 +77,18 @@ func TestTransferTx(t *testing.T) {
 		require.NotZero(t, toEntry.CreatedAt)
 
 		_, err = testStore.GetEntry(context.Background(), toEntry.ID)
+		require.NoError(t, err)
+
+		fromEntry := result.FromEntry
+		require.NotEmpty(t, fromEntry)
+		require.Equal(t, acc2.ID, fromEntry.AccountID)
+		require.Equal(t, -amount, fromEntry.Amount)
+
+		require.NotZero(t, fromEntry.ID)
+		require.NotZero(t, fromEntry.Amount)
+		require.NotZero(t, fromEntry.CreatedAt)
+
+		_, err = testStore.GetEntry(context.Background(), fromEntry.ID)
 		require.NoError(t, err)
 
 		receiveAccount := result.ReceiveAccount
@@ -158,8 +158,8 @@ func TestTransferTxDeadlock(t *testing.T) {
 			ctx := context.WithValue(context.Background(), txKey, txName)
 
 			_, err := testStore.TransferTx(ctx, TransferTxParams{
-				ReceiveAccountID:  fromAccountID,
-				TransferAccountID: toAccountID,
+				ReceiveAccountID:  toAccountID,
+				TransferAccountID: fromAccountID,
 				Amount:            amount,
 			})
 

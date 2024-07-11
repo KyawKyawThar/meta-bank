@@ -240,7 +240,7 @@ func (s *Server) getUser(ctx *gin.Context) {
 	if authPayload.Username != user.Username {
 
 		err := errors.New("request user doesn't belong to the authenticated user")
-		ctx.JSON(http.StatusUnauthorized, err)
+		ctx.JSON(http.StatusUnauthorized, handleCustomErrorResponse(err))
 	}
 
 	res := newUserResponse(user)
