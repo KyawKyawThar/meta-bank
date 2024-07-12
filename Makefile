@@ -37,7 +37,8 @@ mock:
 	mockgen -package mockdb -destination db/mock/store.go github.com/HL/meta-bank/db/sqlc Store
 mock_source:
 	mockgen -source=$(filePath)/db/sqlc/store.go -package mockdb -destination db/mock/store.go
-#sampe file path >>>> filePath=/Users/machineName/go/src/meta-bank this is my project file destination
+#sample file path >>>> filePath=/Users/machineName/go/src/meta-bank this is my project file destination so run
+# make mock_source filePath=/Users/machineName/go/src/meta-bank
 # if you have trouble with this you can also use Reflect mode generates by mockgen running make mock
 server:
 	go run main.go
