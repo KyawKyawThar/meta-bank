@@ -18,6 +18,10 @@ In this Meta bank service provide APIs for the frontend to do following things:
 - [Homebrew](https://brew.sh/)
 - [Migrate](https://github.com/golang-migrate/migrate/tree/master/cmd/migrate)
 
+
+### API Documentation
+- [Postman API Documentation](https://documenter.getpostman.com/view/10197229/2sA3e5e8Ju)
+
     ```bash
     brew install golang-migrate
     ```

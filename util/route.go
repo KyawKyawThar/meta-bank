@@ -9,9 +9,8 @@ const (
 	GetAccount    = "/account/:id"
 	ListAccount   = "/accounts"
 
-	CreateEntry = "/entries"
-	GetEntry    = "/entries/:id"
-	ListEntry   = "/entries"
+	GetEntry  = "/entries/:id"
+	ListEntry = "/entries"
 
 	CreateTransfer = "/transfers"
 	GetTransfer    = "/transfer/:id"
