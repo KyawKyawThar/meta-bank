@@ -8,7 +8,6 @@ network:
 	docker network create bank-network
 postgres:
 	docker run --name postgres --network bank-network -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:16.2-alpine
-
 create_db:
 	docker exec -it postgres createdb --username=root --owner=root meta-bank
 drop_db:
@@ -29,19 +28,19 @@ go:
 	docker build -t meta-bank:latest .
 go_run:
 	docker run --rm --name meta-bank --network bank-network -p 8080:8080 -e DB_SOURCE=$(DB_URL_Docker) -e GIN_MODE=release meta-bank:latest
-redis:
-	docker run --name redis -p 6379:6379 -d redis:7.2-alpine
 
 db_docs:
 	dbdocs build doc/db.dbml --password secret
 db_schema:
 	dbml2sql doc/db.dbml -o doc/schema.sql
-#Store is from Store interface
 mock:
 	mockgen -package mockdb -destination db/mock/store.go github.com/HL/meta-bank/db/sqlc Store
 mock_source:
-	mockgen -source=/Users/kkt/go/src/meta-bank/db/sqlc/store.go -package mockdb -destination db/mock/store.go
+	mockgen -source=$(filePath)/db/sqlc/store.go -package mockdb -destination db/mock/store.go
+
+server:
+	go run main.go
 
 
-.PHONY:postgres create_db drop_db new_migration migrate_up migrate_down sqlc test network db_docs db_schema mock_source mock
+.PHONY:postgres create_db drop_db new_migration migrate_up migrate_down sqlc test network db_docs db_schema mock_source mock go go_run server
 
