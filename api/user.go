@@ -2,7 +2,6 @@ package api
 
 import (
 	"errors"
-	"fmt"
 	db "github.com/HL/meta-bank/db/sqlc"
 	"github.com/HL/meta-bank/token"
 	"github.com/HL/meta-bank/util"
@@ -181,7 +180,6 @@ func (s *Server) loginUser(ctx *gin.Context) {
 		return
 	}
 
-	fmt.Println("content type", ctx.ContentType())
 	refreshToken, refreshPayload, err := s.tokenMaker.CreateToken(user.Username, user.Role, s.config.RefreshTokenDuration)
 
 	if err != nil {

@@ -2,7 +2,6 @@ package api
 
 import (
 	"errors"
-	"fmt"
 	db "github.com/HL/meta-bank/db/sqlc"
 	"github.com/HL/meta-bank/token"
 	"github.com/gin-gonic/gin"
@@ -16,7 +15,6 @@ type listEntryRequest struct {
 }
 
 func (s *Server) listEntry(ctx *gin.Context) {
-	//var req listTransferRequest
 
 	var req listEntryRequest
 
@@ -33,10 +31,7 @@ func (s *Server) listEntry(ctx *gin.Context) {
 			ctx.JSON(http.StatusBadRequest, handleCustomErrorResponse(err))
 			return
 		}
-		handleUserValidationErrResponse(ctx, err)
-		return
 	}
-
 	acc, err := s.store.GetAccount(ctx, req.AccountID)
 	if err != nil {
 		handleDBErrResponse(ctx, err)
@@ -64,7 +59,6 @@ func (s *Server) listEntry(ctx *gin.Context) {
 		handleDBErrResponse(ctx, err)
 		return
 	}
-
 	ctx.JSON(http.StatusOK, entryList)
 }
 
@@ -79,8 +73,6 @@ func (s *Server) getEntry(ctx *gin.Context) {
 		handleUserValidationErrResponse(ctx, err)
 		return
 	}
-
-	fmt.Println("uri", uri.ID)
 
 	entry, err := s.store.GetEntry(ctx, uri.ID)
 

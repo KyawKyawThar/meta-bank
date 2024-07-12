@@ -99,6 +99,7 @@ func (s *Server) getTransfer(ctx *gin.Context) {
 
 	if err := ctx.ShouldBindUri(&uri); err != nil {
 		handleUserValidationErrResponse(ctx, err)
+		return
 	}
 
 	transfer, err := s.store.GetTransfer(ctx, uri.ID)
@@ -149,8 +150,7 @@ func (s *Server) ListTransfer(ctx *gin.Context) {
 			ctx.JSON(http.StatusBadRequest, handleCustomErrorResponse(err))
 			return
 		}
-		handleUserValidationErrResponse(ctx, err)
-		return
+
 	}
 
 	acc, err := s.store.GetAccount(ctx, req.FromAccountID)

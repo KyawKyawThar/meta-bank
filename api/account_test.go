@@ -25,7 +25,6 @@ func TestCreateAccountAPI(t *testing.T) {
 	user, _ := randomUser(t)
 
 	account := randomAccount(user.Username)
-	currency := account.Currency
 
 	testCase := []struct {
 		name          string
@@ -37,7 +36,7 @@ func TestCreateAccountAPI(t *testing.T) {
 		{
 			name: "OK",
 			body: gin.H{
-				"currency": currency,
+				"currency": account.Currency,
 				"balance":  account.Balance,
 			},
 			setUpAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
@@ -62,7 +61,7 @@ func TestCreateAccountAPI(t *testing.T) {
 		{
 			name: "NoAuthorization",
 			body: gin.H{
-				"currency": currency,
+				"currency": account.Currency,
 				"balance":  account.Balance,
 			},
 			setUpAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {},
@@ -77,7 +76,7 @@ func TestCreateAccountAPI(t *testing.T) {
 		{
 			name: "InternalError",
 			body: gin.H{
-				"currency": currency,
+				"currency": account.Currency,
 				"balance":  account.Balance,
 			},
 			setUpAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {

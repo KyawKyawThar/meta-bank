@@ -93,8 +93,6 @@ func (s *Server) ListAccount(ctx *gin.Context) {
 			ctx.JSON(http.StatusBadRequest, handleCustomErrorResponse(err))
 			return
 		}
-		handleUserValidationErrResponse(ctx, err)
-		return
 	}
 
 	authPayload := ctx.MustGet(s.config.AuthorizationPayloadKey).(*token.Payload)
