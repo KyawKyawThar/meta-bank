@@ -14,8 +14,8 @@ type TransferTxResult struct {
 }
 
 type TransferTxParams struct {
-	ReceiveAccountID  int64 `json:"receive_account_id"`
 	TransferAccountID int64 `json:"transfer_account_id"`
+	ReceiveAccountID  int64 `json:"receive_account_id"`
 	Amount            int64 `json:"amount"`
 }
 
@@ -35,8 +35,8 @@ func (store *SQLStore) TransferTx(ctx context.Context, arg TransferTxParams) (Tr
 		fmt.Println(txName, "create transfer.")
 
 		result.Transfer, err = q.CreateTransfer(ctx, CreateTransferParams{
-			FromAccountID: arg.ReceiveAccountID,
-			ToAccountID:   arg.TransferAccountID,
+			FromAccountID: arg.TransferAccountID,
+			ToAccountID:   arg.ReceiveAccountID,
 			Amount:        arg.Amount,
 		})
 
@@ -46,7 +46,7 @@ func (store *SQLStore) TransferTx(ctx context.Context, arg TransferTxParams) (Tr
 
 		fmt.Println(txName, "create entry for receiver account.")
 		result.FromEntry, err = q.CreateEntry(ctx, CreateEntryParams{
-			AccountID: arg.ReceiveAccountID,
+			AccountID: arg.TransferAccountID,
 			Amount:    -arg.Amount,
 		})
 
@@ -56,7 +56,7 @@ func (store *SQLStore) TransferTx(ctx context.Context, arg TransferTxParams) (Tr
 
 		fmt.Println(txName, "create entry for transfer account.")
 		result.ToEntry, err = q.CreateEntry(ctx, CreateEntryParams{
-			AccountID: arg.TransferAccountID,
+			AccountID: arg.ReceiveAccountID,
 			Amount:    arg.Amount,
 		})
 
