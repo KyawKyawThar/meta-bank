@@ -18,12 +18,13 @@ func TestTransferTx(t *testing.T) {
 
 	fmt.Println(">> before:", acc1.Balance, acc2.Balance)
 
-	n := 2
+	n := 5
 
 	amount := int64(10)
 
-	errs := make(chan error)
-	results := make(chan TransferTxResult)
+	//Buffered Channels:
+	errs := make(chan error, n)
+	results := make(chan TransferTxResult, n)
 
 	for i := 0; i < n; i++ {
 
