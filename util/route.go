@@ -16,5 +16,6 @@ const (
 	GetTransfer    = "/transfer/:id"
 	ListTransfer   = "/transfers"
 
-	RenewToken = "/tokens/renew_access"
+	RenewToken  = "/tokens/renew_access"
+	VerifyEmail = "/verify_email"
 )

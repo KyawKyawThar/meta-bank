@@ -10,7 +10,7 @@ Table users as U {
   email varchar [unique,not null]
   full_name varchar [not null]
   role varchar [default: 'depositor']
-  is_varified_email bool [default: false]
+  is_verified_email bool [not null, default: false]
   password_changed_at timestamptz [not null, default: '0001-01-01']
   created_at timestamptz [not null, default: `now()`]
 }
@@ -56,11 +56,21 @@ Table transfers as T {
 
 Table sessions as S {
   id bigint [pk]
-  username varchar [ref: > U.username]
+  username varchar [ref: > U.username,not null]
   refresh_toekn varchar [not null]
   user_agent varchar [not null]
   client_ip varchar [not null]
   is_blocked bool [not null,default: false]
   expires_at timestamptz [not null]
   created_at timestamptz [not null, default: `now()`]
+}
+
+Table verified_email {
+id bigint [pk]
+username varchar [ref: > U.username,not null]
+email varchar [not null]
+secret_code varchar [not null]
+is_used bool [not null,default: false]
+created_at timestamptz [not null, default: `now()`]
+expires_at timestamptz [not null,default: `now() + interval '15 minutes''`]
 }

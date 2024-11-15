@@ -5,6 +5,7 @@ CREATE TABLE users
     email               varchar     NOT NULL UNIQUE,
     full_name            varchar     NOT NULL,
     is_active            boolean     NOT NULL DEFAULT true,
+    "is_verified_email" boolean NOT NULL DEFAULT false,
     password_changed_at timestamptz NOT NULL DEFAULT '0001-01-01 00:00:00z',
     created_at          timestamptz NOT NULL DEFAULT (now())
 );

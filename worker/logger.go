@@ -18,14 +18,6 @@ func (logger *logger) Print(level zerolog.Level, args ...interface{}) {
 	log.WithLevel(level).Msg(fmt.Sprint(args...))
 }
 
-// Note: reserving value zero to differentiate unspecified case.
-//level_unspecified LogLevel = iota
-
-// Printf only for redis internal log system
-func (logger *logger) Printf(ctx context.Context, format string, v ...interface{}) {
-	log.WithLevel(zerolog.DebugLevel).Msgf(format, v...)
-}
-
 // Debug DebugLevel is the lowest level of logging.
 // Debug logs are intended for debugging and development purposes.
 func (logger *logger) Debug(args ...interface{}) {
@@ -50,4 +42,12 @@ func (logger *logger) Error(args ...interface{}) {
 // Fatal FatalLevel is used for undesired and unexpected events that the program cannot recover from.
 func (logger *logger) Fatal(args ...interface{}) {
 	logger.Print(zerolog.FatalLevel, args...)
+}
+
+// Note: reserving value zero to differentiate unspecified case.
+//level_unspecified LogLevel = iota
+
+// Printf only for redis internal log system
+func (logger *logger) Printf(ctx context.Context, format string, v ...interface{}) {
+	log.WithLevel(zerolog.DebugLevel).Msgf(format, v...)
 }

@@ -2,8 +2,9 @@ package util
 
 import (
 	"fmt"
-	"github.com/spf13/viper"
 	"time"
+
+	"github.com/spf13/viper"
 )
 
 type Config struct {
@@ -16,6 +17,9 @@ type Config struct {
 	AuthorizationTypeBearer string        `mapstructure:"AUTHORIZATION_TYPE_BEARER"`
 	AuthorizationPayloadKey string        `mapstructure:"AUTHORIZATION_PAYLOAD_KEY"`
 	AuthorizationHeaderKey  string        `mapstructure:"AUTHORIZATION_HEADER_KEY"`
+	EmailSenderName         string        `mapstructure:"EMAIL_SENDER_NAME"`
+	EmailSenderAddress      string        `mapstructure:"EMAIL_SENDER_ADDRESS"`
+	EmailSenderPassword     string        `mapstructure:"EMAIL_SENDER_PASSWORD"`
 	RefreshTokenDuration    time.Duration `mapstructure:"REFRESH_TOKEN_DURATION"`
 	AccessTokenDuration     time.Duration `mapstructure:"ACCESS_TOKEN_DURATION"`
 }
@@ -32,7 +36,6 @@ func LoadConfig(path string) (config Config, err error) {
 	if err != nil {            // Handle errors reading the config file
 		panic(fmt.Errorf("fatal error config file: %w", err))
 
-		return
 	}
 
 	err = viper.Unmarshal(&config)

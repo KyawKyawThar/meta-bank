@@ -13,6 +13,7 @@ CREATE TABLE "transfers" (
 "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
+
 CREATE INDEX ON "entries" ("account_id");
 
 CREATE INDEX ON "transfers" ("from_account_id");

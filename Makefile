@@ -21,7 +21,7 @@ migrate_up:
 migrate_down:
 	migrate -path db/migrations -database $(DB_URL) -verbose down $(sequence)
 test:
-	go test -v -cover ./...
+	go test -v -cover -short ./...
 sqlc:
 	sqlc generate
 go:
@@ -33,6 +33,11 @@ db_docs:
 	dbdocs build doc/db.dbml --password secret
 db_schema:
 	dbml2sql doc/db.dbml -o doc/schema.sql
+
+redis:
+	docker run --name redis -d -p 6379:6379 redis:7.4-alpine
+test_redis:
+	redis-cli ping
 mock:
 	mockgen -package mockdb -destination db/mock/store.go github.com/HL/meta-bank/db/sqlc Store
 mock_source:
@@ -40,9 +45,11 @@ mock_source:
 #sample file path >>>> filePath=/Users/machineName/go/src/meta-bank this is my project file destination so run
 # make mock_source filePath=/Users/machineName/go/src/meta-bank
 # if you have trouble with this you can also use Reflect mode generates by mockgen running make mock
+mock_distributor:
+	mockgen -source=$(filePath)/worker/distributor.go -package mockdb -destination worker/mock/distributor.go
 server:
 	go run main.go
 
 
-.PHONY:postgres create_db drop_db new_migration migrate_up migrate_down sqlc test network db_docs db_schema mock_source mock go go_run server
+.PHONY:postgres create_db drop_db new_migration migrate_up migrate_down sqlc test network db_docs db_schema mock_source mock go go_run server redis test_redis
 

@@ -6,9 +6,9 @@ CREATE TABLE sessions
     user_agent    VARCHAR     NOT NULL,
     client_ip     VARCHAR     NOT NULL,
     is_blocked    BOOLEAN     NOT NULL DEFAULT FALSE,
-    created_at    timestamptz  DEFAULT (now()),
+    created_at    timestamptz  NOT NULL DEFAULT (now()),
     expired_at    timestamptz NOT NULL
-
 );
+
 ALTER TABLE sessions
     ADD FOREIGN KEY (username) REFERENCES users ("username");

@@ -2,10 +2,11 @@ package api
 
 import (
 	"errors"
+	"net/http"
+
 	db "github.com/HL/meta-bank/db/sqlc"
 	"github.com/HL/meta-bank/token"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 type createAccountRequest struct {
@@ -38,6 +39,7 @@ func (s *Server) createAccount(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, acc)
+
 }
 
 type accountRequestUri struct {

@@ -19,7 +19,8 @@ Update users
 SET password = coalesce(sqlc.narg(password), password),
     email    = coalesce(sqlc.narg(email), email),
     is_active = coalesce(sqlc.narg(is_active), is_active),
-    full_name=coalesce(sqlc.narg(full_name), full_name)
+    full_name=coalesce(sqlc.narg(full_name), full_name),
+    is_verified_email=coalesce(sqlc.narg(is_verified_email),is_verified_email)
 WHERE username = sqlc.arg(username) RETURNING *;
 
 

@@ -467,6 +467,7 @@ func TestGetUserAPI(t *testing.T) {
 		})
 	}
 }
+
 func randomUser(t *testing.T) (user db.User, password string) {
 	password = util.RandomString(8)
 

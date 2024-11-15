@@ -10,8 +10,9 @@ import (
 // instead of inheritance
 type Store interface {
 	Querier
-	CreateUserTx(ctx context.Context, arg CreateTxUserParams) (CreateUserTxResult, error)
+	CreateUserAndVerificationTx(ctx context.Context, arg CreateTxUserParams) (CreateUserAndVerificationTxResult, error)
 	TransferTx(ctx context.Context, arg TransferTxParams) (TransferTxResult, error)
+	VerifyEmailTx(ctx context.Context, arg VerifyEmailTxParams) (VerifyEmailTxResult, error)
 }
 
 // SQLStore provide all functionally to execute db queries and transaction

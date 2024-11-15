@@ -2,6 +2,10 @@ package api
 
 import (
 	"fmt"
+	"github.com/HL/meta-bank/val"
+	"net/http"
+	"os"
+
 	db "github.com/HL/meta-bank/db/sqlc"
 	"github.com/HL/meta-bank/token"
 	"github.com/HL/meta-bank/util"
@@ -12,8 +16,6 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"net/http"
-	"os"
 )
 
 // Server serve HTTP request for our app
@@ -26,7 +28,32 @@ type Server struct {
 }
 
 // NewServer create a new http api and setup routing
-//func NewServer(store db.Store, config util.Config, taskDistributor worker.TaskDistributor) (*Server, error) {
+func NewServer(store db.Store, config util.Config, taskDistributor worker.TaskDistributor) (*Server, error) {
+
+	maker, err := token.NewJWTMaker(config.TokenSymmetricKey)
+
+	if err != nil {
+		return nil, fmt.Errorf("cannot create token maker %w", err)
+	}
+
+	server := &Server{
+		store:           store,
+		config:          config,
+		tokenMaker:      maker,
+		taskDistributor: taskDistributor,
+	}
+
+	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+		v.RegisterValidation("role", val.ValidateRole)
+		v.RegisterValidation("currency", val.ValidateCurrency)
+	}
+
+	server.setUpRouter()
+	return server, nil
+}
+
+// NewServer create a new http api and setup routing
+//func NewServer(store db.Store, config util.Config) (*Server, error) {
 //
 //	maker, err := token.NewJWTMaker(config.TokenSymmetricKey)
 //
@@ -35,10 +62,9 @@ type Server struct {
 //	}
 //
 //	server := &Server{
-//		store:           store,
-//		config:          config,
-//		tokenMaker:      maker,
-//		taskDistributor: taskDistributor,
+//		store:      store,
+//		config:     config,
+//		tokenMaker: maker,
 //	}
 //	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
 //		v.RegisterValidation("role", validateRole)
@@ -48,29 +74,6 @@ type Server struct {
 //	server.setUpRouter()
 //	return server, nil
 //}
-
-// NewServer create a new http api and setup routing
-func NewServer(store db.Store, config util.Config) (*Server, error) {
-
-	maker, err := token.NewJWTMaker(config.TokenSymmetricKey)
-
-	if err != nil {
-		return nil, fmt.Errorf("cannot create token maker %w", err)
-	}
-
-	server := &Server{
-		store:      store,
-		config:     config,
-		tokenMaker: maker,
-	}
-	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
-		v.RegisterValidation("role", validateRole)
-		v.RegisterValidation("currency", validateCurrency)
-	}
-
-	server.setUpRouter()
-	return server, nil
-}
 
 // setUpRouter setup for different HTTP methods
 func (s *Server) setUpRouter() {
@@ -83,7 +86,7 @@ func (s *Server) setUpRouter() {
 
 	router.POST(util.CreateUser, s.createUser)
 	router.POST(util.LoginUser, s.loginUser)
-
+	router.GET(util.VerifyEmail, s.verifyEmail)
 	router.POST(util.RenewToken, s.renewAccessToken)
 
 	authRoutes := router.Group("/").Use(s.authMiddleware(s.tokenMaker))
@@ -100,6 +103,7 @@ func (s *Server) setUpRouter() {
 
 	authRoutes.GET(util.GetEntry, s.getEntry)
 	authRoutes.GET(util.ListEntry, s.listEntry)
+
 	s.router = router
 }
 

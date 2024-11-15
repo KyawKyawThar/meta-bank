@@ -21,4 +21,5 @@ func NewRedisTaskDistributor(redisOpt asynq.RedisClientOpt) TaskDistributor {
 
 	client := asynq.NewClient(redisOpt)
 	return &RedisTaskDistributor{client: client}
+
 }
