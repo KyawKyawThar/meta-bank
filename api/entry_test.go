@@ -8,6 +8,7 @@ import (
 	db "github.com/HL/meta-bank/db/sqlc"
 	"github.com/HL/meta-bank/token"
 	"github.com/HL/meta-bank/util"
+	mockwk "github.com/HL/meta-bank/worker/mock"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 	"io"
@@ -147,7 +148,10 @@ func TestGetEntryAPI(t *testing.T) {
 			store := mockdb.NewMockStore(ctrl)
 			tc.buildStubs(store)
 
-			server := newTestServer(t, store)
+			workerCtrl := gomock.NewController(t)
+			defer workerCtrl.Finish()
+			distributor := mockwk.NewMockTaskDistributor(workerCtrl)
+			server := newTestServer(t, store, distributor)
 			recorder := httptest.NewRecorder()
 
 			url := fmt.Sprintf("/entries/%d", tc.entryID)
@@ -347,7 +351,11 @@ func TestGetEntryListAPI(t *testing.T) {
 			store := mockdb.NewMockStore(ctrl)
 			tc.buildStubs(store)
 
-			server := newTestServer(t, store)
+			workerCtrl := gomock.NewController(t)
+			defer workerCtrl.Finish()
+			distributor := mockwk.NewMockTaskDistributor(workerCtrl)
+
+			server := newTestServer(t, store, distributor)
 			recorder := httptest.NewRecorder()
 
 			url := fmt.Sprint(util.ListEntry)

@@ -9,6 +9,7 @@ import (
 	db "github.com/HL/meta-bank/db/sqlc"
 	"github.com/HL/meta-bank/token"
 	"github.com/HL/meta-bank/util"
+	mockwk "github.com/HL/meta-bank/worker/mock"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
@@ -121,9 +122,13 @@ func TestCreateAccountAPI(t *testing.T) {
 			ctrl := gomock.NewController(t)
 
 			store := mockdb.NewMockStore(ctrl)
+
+			workerCtrl := gomock.NewController(t)
+			defer workerCtrl.Finish()
+			distributor := mockwk.NewMockTaskDistributor(workerCtrl)
 			tc.buildStub(store)
 
-			server := newTestServer(t, store)
+			server := newTestServer(t, store, distributor)
 			recorder := httptest.NewRecorder()
 
 			// Marshal body data to JSON
@@ -246,9 +251,13 @@ func TestGetAccountAPI(t *testing.T) {
 
 			ctrl := gomock.NewController(t)
 			store := mockdb.NewMockStore(ctrl)
+
+			workerCtrl := gomock.NewController(t)
+			defer workerCtrl.Finish()
+			distributor := mockwk.NewMockTaskDistributor(workerCtrl)
 			tc.buildStubs(store)
 
-			server := newTestServer(t, store)
+			server := newTestServer(t, store, distributor)
 			recorder := httptest.NewRecorder()
 
 			url := fmt.Sprintf("/account/%d", tc.accountID)
@@ -403,7 +412,11 @@ func TestGetAccountsListAPI(t *testing.T) {
 
 			tc.buildStubs(store)
 
-			server := newTestServer(t, store)
+			workerCtrl := gomock.NewController(t)
+			defer workerCtrl.Finish()
+			distributor := mockwk.NewMockTaskDistributor(workerCtrl)
+
+			server := newTestServer(t, store, distributor)
 			recorder := httptest.NewRecorder()
 
 			url := fmt.Sprintf(util.ListAccount)

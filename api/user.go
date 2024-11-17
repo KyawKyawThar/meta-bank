@@ -84,7 +84,7 @@ func (s *Server) createUser(ctx *gin.Context) {
 	//	Role:     req.Role,
 	//	IsActive: req.IsActive,
 	//}
-
+	//
 	//user, err := s.store.CreateUser(ctx, arg)
 	//
 	//if err != nil {
@@ -129,23 +129,6 @@ func (s *Server) createUser(ctx *gin.Context) {
 	}
 	res := newUserResponse(txResult.User)
 	ctx.JSON(http.StatusOK, res)
-
-	//user, err := s.store.CreateUser(ctx, arg)
-	//opts := []asynq.Option{
-	//	asynq.MaxRetry(10),
-	//	asynq.ProcessIn(10 * time.Second),
-	//	asynq.Queue(worker.QueueCritical),
-	//}
-	//
-	//payload := &worker.PayloadSendVerifyEmail{Username: user.Username}
-	//err = s.taskDistributor.DistributorSendVerifyEmail(ctx, payload, opts...)
-	//
-	//if err != nil {
-	//	err := fmt.Errorf("failed to distribute task to send verify email %w", err)
-	//	ctx.JSON(http.StatusInternalServerError, handleErrorResponse(err))
-	//	return
-	//}
-	//
 
 }
 

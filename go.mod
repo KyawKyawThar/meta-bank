@@ -1,6 +1,6 @@
 module github.com/HL/meta-bank
 
-go 1.22.3
+go 1.20
 
 require (
 	github.com/dn365/gin-zerolog v0.0.0-20171227063204-b43714b00db1

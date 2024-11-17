@@ -5,7 +5,6 @@ import (
 	"github.com/HL/meta-bank/util"
 	"github.com/HL/meta-bank/worker"
 	"github.com/gin-gonic/gin"
-	"github.com/hibiken/asynq"
 	"github.com/stretchr/testify/require"
 	"os"
 	"testing"
@@ -17,18 +16,18 @@ const (
 	authorizationHeaderKey  = "authorization"
 )
 
-func newTestServer(t *testing.T, store db.Store) *Server {
+func newTestServer(t *testing.T, store db.Store, distributor worker.TaskDistributor) *Server {
 
 	config := util.Config{TokenSymmetricKey: util.RandomString(32),
 		AccessTokenDuration:     time.Minute,
 		AuthorizationTypeBearer: authorizationTypeBearer,
 		AuthorizationHeaderKey:  authorizationHeaderKey}
 
-	redsOpts := asynq.RedisClientOpt{
-		Addr: config.RedisAddress,
-	}
-	taskDistributor := worker.NewRedisTaskDistributor(redsOpts)
-	server, err := NewServer(store, config, taskDistributor)
+	//redsOpts := asynq.RedisClientOpt{
+	//	Addr: config.RedisAddress,
+	//}
+	//taskDistributor := worker.NewRedisTaskDistributor(redsOpts)
+	server, err := NewServer(store, config, distributor)
 
 	//server, err := NewServer(store, config)
 	require.NoError(t, err)
