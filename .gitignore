@@ -4,4 +4,5 @@ app.env
 aws_setup.txt
 dependency_package_lists.txt
 dbml-error.log
+app.env
 
